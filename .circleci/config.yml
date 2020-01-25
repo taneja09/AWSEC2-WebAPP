@@ -21,10 +21,10 @@ jobs:
 
 workflows:
   version: 2
-  pr-check-workfow:
+  pr-check-workflow:
     jobs:
     - pr_check
-  build-depoy-workfow:
+  build-depoy-workflow:
     jobs:
     - build
   
