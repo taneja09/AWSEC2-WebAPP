@@ -42,7 +42,7 @@ exports.create = (req, res) => {
                         });
                     } else if (isNaN(amount_due) || amount_due < 0.01) {
                         res.status(400).send({
-                            Message: "Please enter correct amount!"
+                            Message: "Please enter correct amount and it should be greater than 0.01 "
                         });
                     } else {
                         models.Bill.create({
