@@ -36,7 +36,6 @@ jobs:
             for i in `seq 1 30`;
             do
               nc -z 127.0.0.1 3306 && echo Success && exit 0
-              echo -n
               sleep 10
             done
             echo Failed && exit 1
