@@ -31,17 +31,6 @@ jobs:
     steps:
       - checkout #check out the source code from the repository
       - run:
-          name: Waiting for MySQL to be ready
-          command: |
-            for i in `seq 1 100`;
-            do
-              nc -z 127.0.0.1 3306 && echo Success && exit 0
-              echo -n .
-              sleep 10
-            done
-            echo Failed && exit 1
-
-      - run:
           name: Install MySQL CLI
           command: |
             sudo apt-get install default-mysql-client
