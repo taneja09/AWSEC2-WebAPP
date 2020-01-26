@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Install MySQL CLI
           command: |
-            apt-get update && apt-get install -y mysql-client
+            apt-get update && apt-get install mysql-client
             mysql -h 127.0.0.1 -u user -ppassw0rd --execute="SELECT * FROM test_db.User"
 
 
