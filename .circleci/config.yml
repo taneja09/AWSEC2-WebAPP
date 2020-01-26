@@ -32,7 +32,7 @@ jobs:
       - checkout #check out the source code from the repository
       - run:
           name: Waiting for MySQL to be ready
-          command: |
+          command: >
             for i in `seq 1 10`;
             do
               nc -z 127.0.0.1 3306 && echo Success && exit 0
@@ -42,7 +42,7 @@ jobs:
             echo Failed waiting for MySQL && exit 1
       - run:
           name: Install MySQL CLI
-          command: |
+          command: >
             sudo apt-get install default-mysql-client
             mysql -h 127.0.0.1 -u user -ppassw0rd --execute="SELECT * FROM test_db.User"
 
