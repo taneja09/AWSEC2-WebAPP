@@ -39,7 +39,7 @@ jobs:
               echo -n
               sleep 10
             done
-            echo Failed waiting for MySQL && exit 1
+            echo Failed && exit 1
       - run:
           name: Install MySQL CLI
           command: >
