@@ -70,6 +70,8 @@ jobs:
             node index.js
             sleep 10
             sudo netstat -tupln
+            npm test
+            process.exit(code)
 
 workflows:
   version: 2
