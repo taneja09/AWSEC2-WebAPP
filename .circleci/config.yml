@@ -61,9 +61,9 @@ jobs:
       - run:
           name: start testing
           command: |
-          node index.js
-          sleep 10
-          sudo netstat -tupln
+            node index.js
+            sleep 10
+            sudo netstat -tupln
 
 workflows:
   version: 2
