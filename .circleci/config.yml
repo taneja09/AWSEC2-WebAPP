@@ -54,7 +54,8 @@ jobs:
           name: Create database
           command: |
             node index.js
-            curl http://localhost:3000/
+            sleep 5
+            ps aux | grep node
             npm test
 
 
