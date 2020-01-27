@@ -29,9 +29,6 @@ jobs:
           MYSQL_USER: root
           MYSQL_PASSWORD: password
           MYSQL_PORT: 3306
-          PORT: 3000
-
-
 
     steps:
       - checkout #check out the source code from the repository
@@ -64,7 +61,7 @@ jobs:
             node index.js
             sleep 10
             ps aux | grep node
-
+            npm test
 
 workflows:
   version: 2
