@@ -25,6 +25,13 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_HOST: 127.0.0.1
+          MYSQL_DATABASE: CloudDB
+          MYSQL_USER: root
+          MYSQL_PASSWORD: password
+          MYSQL_PORT: 3306
+          PORT: 3000
+
+
 
     steps:
       - checkout #check out the source code from the repository
@@ -54,7 +61,7 @@ jobs:
       - run:
           name: start testing
           command: |
-            node index.js --env.NODE_ENV=test
+            node index.js
             sleep 10
             ps aux | grep node
 
