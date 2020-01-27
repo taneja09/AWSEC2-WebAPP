@@ -54,8 +54,8 @@ jobs:
       - run:
           name: start testing
           command: |
-            node index.js
-            sleep 5
+            node index.js --env.NODE_ENV=test
+            sleep 10
             ps aux | grep node
 
 
