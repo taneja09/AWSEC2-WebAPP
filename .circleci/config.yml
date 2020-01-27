@@ -49,14 +49,14 @@ jobs:
           name: Create database
           command: |
             sudo mysql -u root -e "CREATE DATABASE CloudDB;"
+            sudo mysql -u root -e "show databases";
 
       - run:
-          name: Create database
+          name: start testing
           command: |
             node index.js
             sleep 5
             ps aux | grep node
-            npm test
 
 
 workflows:
