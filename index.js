@@ -28,6 +28,9 @@ require('./api-routes/routes')(app);
     });
     app.on('error', onError);
     app.on('listening', onListening);
+  }).catch(function(err){
+    console.log(err);
+    console.log(models.db);
   });
   
 

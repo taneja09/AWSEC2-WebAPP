@@ -57,8 +57,7 @@ jobs:
           command: |
             node index.js --env.NODE_ENV=test --env.PORT=3000
             sleep 10
-            ps aux | grep node
-            npm test
+            sudo netstat -tupln
 
 workflows:
   version: 2
