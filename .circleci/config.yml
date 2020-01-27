@@ -55,13 +55,12 @@ jobs:
           command: |
             sudo mysql -u root -e "CREATE DATABASE CloudDB;"
             sudo mysql -u root -e "show databases";
-            sudo mysql -u root -e "UPDATE mysql.user SET Password='helloworld' WHERE User='root'";
             sudo mysql -u root -e "SELECT * FROM mysql.user";
 
       - run:
           name: start testing
           command: |
-            export MYSQL_ROOT_PASSWORD="helloworld"
+            export MYSQL_ROOT_PASSWORD=""
             export MYSQL_HOST="127.0.0.1"
             export MYSQL_DATABASE="CloudDB"
             export MYSQL_PORT="3306"
