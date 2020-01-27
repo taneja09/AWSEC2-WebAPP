@@ -55,6 +55,7 @@ jobs:
           command: |
             sudo mysql -u root -e "CREATE DATABASE CloudDB;"
             sudo mysql -u root -e "show databases";
+            sudo mysql -u root -e "SELECT * FROM mysql.user";
 
       - run:
           name: start testing
