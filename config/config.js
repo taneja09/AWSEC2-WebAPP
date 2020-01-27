@@ -14,7 +14,8 @@ module.exports = {
     "database": process.env.MYSQL_DATABASE,
     "host": process.env.MYSQL_HOST,
     "dialect": process.env.MYSQL_DIALECT,
-    "logging": false
+    "logging": false,
+    "port": process.env.MYSQL_PORT
   },
   "production": {
     "username": "root",
