@@ -21,20 +21,39 @@ jobs:
 
   initializeDB:
     docker:
-      - image: circleci/mysql:8.0.4
+      - image: circleci/node:10.12.0
         environment:
-          MYSQL_ROOT_PASSWORD: rootpw
-          MYSQL_DATABASE: test_db
-          MYSQL_USER: user
-          MYSQL_PASSWORD: passw0rd
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_HOST: 127.0.0.1
 
     steps:
       - checkout #check out the source code from the repository
       - run:
-          name: Install MySQL CLI
+          name: Install everything we need here 
           command: |
-            apt-get update && apt-get install -y default-mysql-client
-            mysql -h 127.0.0.1 -u user -ppassw0rd --execute="SELECT * FROM test_db.User"
+            sudo apt-get update
+            sudo apt-get install mysql-client
+            sudo apt-get -y install mysql-server
+
+      - run:
+          npm install
+      
+      - run:
+          name: Start database server
+          command: |
+            sudo service mysql start
+            sleep 2
+            ps aux | grep mysql
+
+      - run:
+          name: Create database
+          command: |
+            sudo mysql -u root -e "CREATE DATABASE CloudDB;"
+
+      - run:
+          name: Create database
+          command: |
+            npm test  
 
 
 workflows:
