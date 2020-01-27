@@ -9,7 +9,7 @@
   },
   "test": {
     "username": "root",
-    "password": "password",
+    "password": "divinity@1202",
     "database": "CloudDB",
     "host": "127.0.0.1",
     "dialect": "mysql"
