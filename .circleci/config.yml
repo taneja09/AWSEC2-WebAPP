@@ -24,8 +24,12 @@ jobs:
       - image: circleci/node:10.12.0
         environment:
           MYSQL_ROOT_PASSWORD: "helloworld"
-          MYSQL_HOST: 127.0.0.1
+          MYSQL_HOST: "127.0.0.1"
+          MYSQL_DATABASE: "CloudDB"
           MYSQL_PORT: 3306
+          MYSQL_USERNAME: "root"
+          MYSQL_DIALECT: "mysql"
+          NODE_ENV: test
 
     steps:
       - checkout #check out the source code from the repository
@@ -55,7 +59,7 @@ jobs:
       - run:
           name: start testing
           command: |
-            node index.js --env.NODE_ENV=test --env.PORT=3000
+            node index.js
             sleep 10
             sudo netstat -tupln
 
