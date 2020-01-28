@@ -69,12 +69,12 @@ jobs:
             export NODE_ENV="test" 
             node index.js
           background: true
-          
+
       - run:
           name: start test
           command: |
             npm test
-            process.exit(code)
+            process.exit()
 
 workflows:
   version: 2
