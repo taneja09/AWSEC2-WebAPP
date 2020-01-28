@@ -69,7 +69,7 @@ jobs:
             export NODE_ENV="test" 
             node index.js
             sleep 10
-            .exit
+            process.exit(0)
           background: true
 
 
