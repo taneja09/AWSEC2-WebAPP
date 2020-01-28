@@ -83,6 +83,9 @@ workflows:
   pr-check-workflow:
     jobs:
     - pr_check
+        filters:
+          branches:
+            only: master
   build-depoy-workflow:
     jobs:
     - build
