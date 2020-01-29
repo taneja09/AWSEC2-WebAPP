@@ -88,5 +88,9 @@ workflows:
     - build_deploy
   initializeDB:
     jobs:
-    - initializeDB
+    - initializeDB:
+        filters:
+            branches:
+              only:
+                - master
   
