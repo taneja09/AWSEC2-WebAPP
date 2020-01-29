@@ -27,24 +27,43 @@ exports.create = (req, res) => {
                     var uuid = uuidv4();
                     var vendor = req.body.vendor;
                     var amount_due = req.body.amount_due;
+                    amount_due = amount_due.toFixed(2);
                     var categories = req.body.categories;
-                    categories = categories.join();
+                    var categoriesSet = new Set(categories);
+                    var categoriesString = categories.join();
                     var paymentStatus = req.body.paymentStatus;
                     var bill_date = req.body.bill_date;
                     var due_date = req.body.due_date;
                     var owner_id = result[0].id;
                     var datevalts = new Date();
                     datevalts = datevalts.toISOString();
+                    var paymentStatusSet = new Set(["paid", "due", "past_due", "no_payment_required"]);
+                    var dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
 
-                    if (!vendor || !bill_date || !due_date || !amount_due || !categories || !paymentStatus) {
+                    if (!vendor || !bill_date || !due_date || !amount_due || !categoriesString || !paymentStatus) {
                         res.status(400).send({
                             Message: "Please provide all required fields - vendor, bill_date, due_date, amount_due, categories, paymentStatus !"
                         });
-                    } else if (isNaN(amount_due) || amount_due < 0.01) {
+
+                    } else if (isNaN(amount_due) || amount_due < 0.01 ) {
                         res.status(400).send({
-                            Message: "Please enter correct amount and it should be greater than 0.01 "
+                            Message: "Please enter correct amount in double and it should be greater than 0.01 "
                         });
-                    } else {
+                    }else if(!paymentStatusSet.has(paymentStatus)){
+                        res.status(400).send({
+                            Message: "Please provide correct payment status from the following - paid, due, past_due, no_payment_required"
+                        });
+                    }else if(categoriesSet.size != categories.length){
+                        res.status(400).send({
+                            Message: "Please provide unique categories ! Duplicates are not allowed."
+                        });
+                    }else if(!(dateRegex.test(bill_date)) || !(dateRegex.test(due_date))){
+                        res.status(400).send({
+                            Message: "Please provide valid due date and bill date."
+                        });
+                    } 
+                    else {
+                        console.log(amount_due % 1);
                         models.Bill.create({
                             id: uuid,
                             created_ts: datevalts,
@@ -54,15 +73,13 @@ exports.create = (req, res) => {
                             bill_date: bill_date,
                             due_date: due_date,
                             amount_due: amount_due,
-                            categories: categories,
+                            categories: categoriesString,
                             paymentStatus: paymentStatus
                         }).then(function(Bill) {
                             res.status(201).send(Bill);
-                        }).catch(function(err) {
-                            console.log(err);
+                        }).catch(function(err){
                             res.status(400).send("Issue while creating Bill !");
                         });
-
                     }
                 } else {
                     res.statusCode = 401
@@ -142,12 +159,13 @@ exports.viewAllBills = (req, res) => {
                 var valid = true;
                 valid = bcrypt.compareSync(password, result[0].password) && valid;
                 if (valid) {
-                    models.Bill.findAll({
+                    models.Bill.findOne({
                         where: {
-                            id: billId
+                            id: billId,
+                            owner_id: result[0].id
                         }
                     }).then(function(UserBill) {
-                        if (UserBill.length > 0)
+                        if (UserBill)
                             res.status(200).send(UserBill);
     
                         else
@@ -194,34 +212,52 @@ exports.viewAllBills = (req, res) => {
         
                             var vendor = req.body.vendor;
                             var amount_due = req.body.amount_due;
+                            amount_due = amount_due.toFixed(2);
                             var categories = req.body.categories;
-                            categories = categories.join();
+                            var categoriesSet = new Set(categories);
+                            var categoriesString = categories.join();
                             var paymentStatus = req.body.paymentStatus;
                             var bill_date = req.body.bill_date;
                             var due_date = req.body.due_date;
                             var datevalts = new Date();
                             datevalts = datevalts.toISOString();
+                            var paymentStatusSet = new Set(["paid", "due", "past_due", "no_payment_required"]);
+                            var dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
         
-                            if (!vendor || !bill_date || !due_date || !amount_due || !categories || !paymentStatus) {
+                            if (!vendor || !bill_date || !due_date || !amount_due || !categoriesString || !paymentStatus) {
                                 res.status(400).send({
                                     Message: "Please provide all required fields - vendor, bill_date, due_date, amount_due, categories, paymentStatus !"
                                 });
-                            } else if (isNaN(amount_due) || amount_due < 0.01) {
+        
+                            } else if (isNaN(amount_due) || amount_due < 0.01 ) {
                                 res.status(400).send({
-                                    Message: "Please enter correct amount and it should be greater than 0.01 "
+                                    Message: "Please enter correct amount in double and it should be greater than 0.01 "
                                 });
-                            } else {
+                            }else if(!paymentStatusSet.has(paymentStatus)){
+                                res.status(400).send({
+                                    Message: "Please provide correct payment status from the following - paid, due, past_due, no_payment_required"
+                                });
+                            }else if(categoriesSet.size != categories.length){
+                                res.status(400).send({
+                                    Message: "Please provide unique categories ! Duplicates are not allowed."
+                                });
+                            }else if(!(dateRegex.test(bill_date)) || !(dateRegex.test(due_date))){
+                                res.status(400).send({
+                                    Message: "Please provide valid due date and bill date."
+                                });
+                            }  else {
                                 models.Bill.update({
                                     updated_ts: datevalts,
                                     vendor: vendor,
                                     bill_date: bill_date,
                                     due_date: due_date,
                                     amount_due: amount_due,
-                                    categories: categories,
+                                    categories: categoriesString,
                                     paymentStatus: paymentStatus
                                 }, {
                                     where: {
-                                        id: billId
+                                        id: billId,
+                                        owner_id: result[0].id
                                     }
                                 }).then(function(BillUpdate) {
                                     if (BillUpdate[0] > 0) {
@@ -261,7 +297,6 @@ exports.viewAllBills = (req, res) => {
         exports.deleteBill = (req, res) => {
             var credentials = auth(req);
             if (!credentials) {
-                console.log("hello");
                 res.statusCode = 401
                 res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
                 res.end('Access denied')
@@ -269,6 +304,10 @@ exports.viewAllBills = (req, res) => {
                 var username = credentials.name;
                 var password = credentials.pass;
                 var billId = req.url.split("/")[3];
+                if(billId.lengh === 0){
+                    res.status(400).send("Please provide a valid Bill id to delete !");
+                }
+                else{
                 models.User.findAll({
                     where: {
                         email_address: username
@@ -279,7 +318,8 @@ exports.viewAllBills = (req, res) => {
                     if (valid) {
                         models.Bill.destroy({
                             where: {
-                                id: billId
+                                id: billId,
+                                owner_id: result[0].id
                             }
                         }).then(function(UserBill) {
                             if (UserBill > 0)
@@ -303,6 +343,8 @@ exports.viewAllBills = (req, res) => {
                     res.end('Access denied')
                 });
         
+             }
+
             }
         
         }

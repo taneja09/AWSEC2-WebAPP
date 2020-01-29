@@ -10,7 +10,7 @@ jobs:
           name: update-npm-modules
           command: echo "Hello Word !!"
 
-  build:
+  build_deploy:
     docker:
       - image: circleci/node:10.12.0
     steps:
@@ -19,12 +19,74 @@ jobs:
           name: update-npm-modules
           command: echo "Hello Word !!"
 
+  initializeDB:
+    docker:
+      - image: circleci/node:10.12.0
+        environment:
+          MYSQL_ROOT_PASSWORD: "helloworld"
+          MYSQL_HOST: "127.0.0.1"
+          MYSQL_DATABASE: "CloudDB"
+          MYSQL_PORT: 3306
+          MYSQL_USERNAME: "root"
+          MYSQL_DIALECT: "mysql"
+          NODE_ENV: test
+
+    steps:
+      - checkout #check out the source code from the repository
+      - run:
+          name: Install everything we need here 
+          command: |
+            sudo apt-get update
+            sudo apt-get install mysql-client
+            sudo apt-get -y install mysql-server
+
+      - run:
+          npm install
+      
+      - run:
+          name: Start database server
+          command: |
+            sudo service mysql start
+            sleep 2
+            ps aux | grep mysql
+
+      - run:
+          name: Create database
+          command: |
+            sudo mysql -u root -e "CREATE DATABASE CloudDB;"
+            sudo mysql -u root -e "show databases";
+            sudo mysql -u root -e "SELECT * FROM mysql.user";
+
+      - run:
+          name: start service
+          command: |
+            export MYSQL_ROOT_PASSWORD=""
+            export MYSQL_HOST="127.0.0.1"
+            export MYSQL_DATABASE="CloudDB"
+            export MYSQL_PORT="3306"
+            export MYSQL_USERNAME="root"
+            export MYSQL_DIALECT="mysql"
+            export NODE_ENV="test" 
+            node index.js
+            sleep 10
+            process.exit(0)
+          background: true
+
+
+      - run:
+          name: start test
+          command: |
+            npm test
+
 workflows:
   version: 2
-  pr-check-workflow:
+  pr-check:
     jobs:
     - pr_check
-  build-depoy-workflow:
+  build_deploy:
     jobs:
-    - build
+    - build_deploy
+  initializeDB:
+    jobs:
+    - initializeDB
   
