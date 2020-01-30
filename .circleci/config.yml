@@ -77,7 +77,7 @@ workflows:
     - pr_check
   build_deploy:
     jobs:
-    - initializeDB:
+    - build_deploy:
         filters:
             branches:
               only:
