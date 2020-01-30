@@ -60,7 +60,7 @@ jobs:
             export MYSQL_DIALECT="mysql"
             export NODE_ENV="test" 
             node index.js
-            sleep 20
+            sleep 60
             process.exit(0)
           background: true
 
