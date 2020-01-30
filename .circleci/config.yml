@@ -68,6 +68,7 @@ jobs:
       - run:
           name: start test
           command: |
+            sleep 30
             npm test
 
 workflows:
