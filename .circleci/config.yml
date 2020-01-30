@@ -8,18 +8,10 @@ jobs:
       - checkout #check out the source code from the repository
       - run:
           name: update-npm-modules
-          command: echo "Hello Word !!"
+          command: |
+            npm install
 
   build_deploy:
-    docker:
-      - image: circleci/node:10.12.0
-    steps:
-      - checkout #check out the source code from the repository
-      - run:
-          name: update-npm-modules
-          command: echo "Hello Word !!"
-
-  initializeDB:
     docker:
       - image: circleci/node:10.12.0
         environment:
@@ -84,9 +76,6 @@ workflows:
     jobs:
     - pr_check
   build_deploy:
-    jobs:
-    - build_deploy
-  initializeDB:
     jobs:
     - initializeDB:
         filters:
