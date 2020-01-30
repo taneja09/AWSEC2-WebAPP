@@ -27,7 +27,6 @@ exports.create = (req, res) => {
                     var uuid = uuidv4();
                     var vendor = req.body.vendor;
                     var amount_due = req.body.amount_due;
-                    amount_due = amount_due.toFixed(2);
                     var categories = req.body.categories;
                     var categoriesSet = new Set(categories);
                     var categoriesString = categories.join();
@@ -63,7 +62,7 @@ exports.create = (req, res) => {
                         });
                     } 
                     else {
-                        console.log(amount_due % 1);
+                        amount_due = amount_due.toFixed(2);
                         models.Bill.create({
                             id: uuid,
                             created_ts: datevalts,
@@ -212,7 +211,6 @@ exports.viewAllBills = (req, res) => {
         
                             var vendor = req.body.vendor;
                             var amount_due = req.body.amount_due;
-                            amount_due = amount_due.toFixed(2);
                             var categories = req.body.categories;
                             var categoriesSet = new Set(categories);
                             var categoriesString = categories.join();
@@ -223,13 +221,21 @@ exports.viewAllBills = (req, res) => {
                             datevalts = datevalts.toISOString();
                             var paymentStatusSet = new Set(["paid", "due", "past_due", "no_payment_required"]);
                             var dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+                            var id = req.body.id;
+                            var created_ts = req.body.created_ts;
+                            var updated_ts = req.body.updated_ts;
+                            var owner_id = req.body.owner_id;
         
                             if (!vendor || !bill_date || !due_date || !amount_due || !categoriesString || !paymentStatus) {
                                 res.status(400).send({
                                     Message: "Please provide all required fields - vendor, bill_date, due_date, amount_due, categories, paymentStatus !"
                                 });
         
-                            } else if (isNaN(amount_due) || amount_due < 0.01 ) {
+                            } else if(id || created_ts || updated_ts || owner_id){
+                                res.status(400).send({
+                                    Message: "Please remove any other field apart from  - vendor, bill_date, due_date, amount_due, categories, paymentStatus !"
+                                });
+                            }else if (isNaN(amount_due) || amount_due < 0.01 ) {
                                 res.status(400).send({
                                     Message: "Please enter correct amount in double and it should be greater than 0.01 "
                                 });
@@ -246,6 +252,7 @@ exports.viewAllBills = (req, res) => {
                                     Message: "Please provide valid due date and bill date."
                                 });
                             }  else {
+                                amount_due = amount_due.toFixed(2);
                                 models.Bill.update({
                                     updated_ts: datevalts,
                                     vendor: vendor,
