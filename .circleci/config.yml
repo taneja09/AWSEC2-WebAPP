@@ -52,7 +52,7 @@ jobs:
           command: |
             sudo mysql -u root -e "CREATE DATABASE CloudDB;"
             sudo mysql -u root -e "show databases";
-            sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass'";
+            sudo mysql -u root -e "UPDATE mysql.user SET authentication_string = 'MyNewPass', password_expired = 'N'WHERE User = 'root' AND Host = 'localhost'";
             sudo mysql -u root -e "SELECT * FROM mysql.user";
 
       - run:
