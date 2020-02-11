@@ -28,14 +28,12 @@ jobs:
       - run:
           name: Install everything we need here 
           command: |
-            sudo apt-get remove --purge mysql*
             sudo apt-get clean
             sudo apt-get install lsb-release
             wget https://dev.mysql.com/get/mysql-apt-config_0.8.3-1_all.deb
             sudo dpkg -i mysql-apt-config_0.8.3-1_all.deb
-            sudo apt-get -f install
             sudo apt-get update
-            sudo apt-get -y install mysql-server
+            sudo apt-get --quiet --yes --force-yes install mysql-server
             sudo apt-get install mysql-client
             sudo mysql -V
 
