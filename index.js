@@ -4,12 +4,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var cors = require('cors');
 var port = normalizePort(process.env.PORT || '3000');
+var fileUpload = require('express-fileupload');
 
 
 const app = express();
 app.set('port',port);
 app.use(bodyParser.json());
 app.use(cors());
+app.use(fileUpload({
+  createParentPath: true
+}));
 
 app.get('/',(req,res) => {
     res.json({'message':'Hello Cloud !!'}); 
