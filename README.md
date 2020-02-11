@@ -14,6 +14,8 @@ External Libraries used:
 6. dotenv - to process the environment variables
 7. mysql - dialect for sequelize 
 8. mocha - for integration testing in java
+9. fs - for file saving and removing file from server
+10. express-fileupload - for file upload purpose
 
 Building & Run the appication:
 
@@ -25,6 +27,6 @@ Run the test case:
 once the server is up on port 3000
 
 command : npm test
-update divya taneja
+
 
 
