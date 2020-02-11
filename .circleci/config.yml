@@ -29,10 +29,11 @@ jobs:
           name: Install everything we need here 
           command: |
             wget https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb
+            sudo apt-get install gdebi-core
             sudo gdebi mysql-apt-config_0.8.10-1_all.deb
             sudo apt-get update
-            sudo apt-get install mysql-client
             sudo apt-get -y install mysql-server
+            sudo apt-get install mysql-client
             sudo mysql -V
 
       - run:
