@@ -35,6 +35,7 @@ jobs:
             sudo apt-get update
             sudo apt-get --quiet --yes --force-yes install mysql-server
             sudo apt-get install mysql-client
+            sudo ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass';
             sudo mysql -V
 
       - run:
@@ -57,7 +58,7 @@ jobs:
       - run:
           name: start service
           command: |
-            export MYSQL_ROOT_PASSWORD=""
+            export MYSQL_ROOT_PASSWORD="MyNewPass"
             export MYSQL_HOST="127.0.0.1"
             export MYSQL_DATABASE="CloudDB"
             export MYSQL_PORT="3306"
