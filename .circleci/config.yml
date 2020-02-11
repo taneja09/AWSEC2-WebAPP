@@ -26,51 +26,8 @@ jobs:
     steps:
       - checkout #check out the source code from the repository
       - run:
-          name: Install everything we need here 
-          command: |
-            sudo apt-get clean
-            sudo apt-get install lsb-release
-            wget https://dev.mysql.com/get/mysql-apt-config_0.8.3-1_all.deb
-            sudo dpkg -i mysql-apt-config_0.8.3-1_all.deb
-            sudo apt-get update
-            sudo apt-get --quiet --yes --force-yes install mysql-server
-            sudo apt-get install mysql-client
-            sudo mysql -V
-
-      - run:
           npm install
-      
-      - run:
-          name: Start database server
-          command: |
-            sudo service mysql start
-            sleep 2
-            ps aux | grep mysql
-
-      - run:
-          name: Create database
-          command: |
-            sudo mysql -u root -e "CREATE DATABASE CloudDB;"
-            sudo mysql -u root -e "show databases";
-            sudo mysql -u root -e "UPDATE mysql.user SET authentication_string = 'MyNewPass', password_expired = 'N'WHERE User = 'root' AND Host = 'localhost'";
-            sudo mysql -u root -e "SELECT * FROM mysql.user";
-
-      - run:
-          name: start service
-          command: |
-            export MYSQL_ROOT_PASSWORD="MyNewPass"
-            export MYSQL_HOST="127.0.0.1"
-            export MYSQL_DATABASE="CloudDB"
-            export MYSQL_PORT="3306"
-            export MYSQL_USERNAME="root"
-            export MYSQL_DIALECT="mysql"
-            export NODE_ENV="test" 
-            node index.js
-            sleep 60
-            process.exit(0)
-          background: true
-
-
+          
       - run:
           name: start test
           command: |

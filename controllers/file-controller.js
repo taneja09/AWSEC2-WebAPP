@@ -37,6 +37,9 @@ exports.create = (req, res) => {
                         owner_id: User[0].id
                     }
                 }).then(function(Bill) {
+                    if(Bill[0].attachment){
+                        res.status(400).send("Bill already has a file attached, please delete that before uploading a new File !");
+                    }else{
                     var uuid = uuidv4();
                     var nameUUID = shortid.generate();
                     var file = req.files.myfile;
@@ -81,6 +84,7 @@ exports.create = (req, res) => {
                         console.log(err);
                         res.status(400).send("Issue while uploading File !");
                     });
+                    }
                 }).catch(function(err) {
                     res.status(404).send("Bill is not found !");
                 });
@@ -134,6 +138,7 @@ exports.getFile = (req, res) => {
                             }
                         }).then(function(File) {
                             File.bill_id = undefined;
+                            File.metaData = undefined;
                             res.status(200).send(File);
                         }).catch(function(err) {
                             res.status(404).send("Bill is not found !");

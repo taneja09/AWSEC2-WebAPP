@@ -38,6 +38,7 @@ exports.create = (req, res) => {
                     datevalts = datevalts.toISOString();
                     var paymentStatusSet = new Set(["paid", "due", "past_due", "no_payment_required"]);
                     var dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+                    var fileAttached = JSON.stringify(req.body.attachment) == "{}" ? null : req.body.attachment;
 
                     if (!vendor || !bill_date || !due_date || !amount_due || !categoriesString || !paymentStatus) {
                         res.status(400).send({
@@ -73,7 +74,8 @@ exports.create = (req, res) => {
                             due_date: due_date,
                             amount_due: amount_due,
                             categories: categoriesString,
-                            paymentStatus: paymentStatus
+                            paymentStatus: paymentStatus,
+                            attachment: fileAttached
                         }).then(function(Bill) {
                             res.status(201).send(Bill);
                         }).catch(function(err){
