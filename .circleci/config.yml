@@ -35,7 +35,6 @@ jobs:
             sudo apt-get update
             sudo apt-get --quiet --yes --force-yes install mysql-server
             sudo apt-get install mysql-client
-            sudo ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass';
             sudo mysql -V
 
       - run:
@@ -53,6 +52,7 @@ jobs:
           command: |
             sudo mysql -u root -e "CREATE DATABASE CloudDB;"
             sudo mysql -u root -e "show databases";
+            sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass'";
             sudo mysql -u root -e "SELECT * FROM mysql.user";
 
       - run:
