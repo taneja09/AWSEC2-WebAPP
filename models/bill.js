@@ -52,5 +52,13 @@ var Bill = sequelize.define('Bill', {
         modelName: 'singularName'
     });
 
+    Bill.associate = function(models) {
+        models.Bill.hasOne(models.File,{foreignKey:{
+            name: 'bill_id',
+            allowNull: false,
+            unique: true
+        }, sourceKey:'id'});
+      };
+
 return Bill;
 }

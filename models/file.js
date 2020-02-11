@@ -1,6 +1,5 @@
 'use strict';
 const uuid = require('uuid/v4');
-const Bill = require('./bill');
 module.exports = (sequelize, DataTypes) => {
 var File = sequelize.define('File', {
     id: {
@@ -20,27 +19,17 @@ var File = sequelize.define('File', {
     upload_date:{
         allowNull: false,
         type: DataTypes.STRING
-    }
+    },
+    metaData:{
+        allowNull: false,
+        type: DataTypes.JSON
+}
 },
     {
         timestamps: false,
         freezeTableName: true,
         modelName: 'singularName'
     });
-
-        File.associate = function(models) {
-        models.File.belongsTo(models.Bill,{foreignKey:{
-            name: 'bill_id',
-            allowNull: false,
-        }, sourceKey:'id'});
-      };
-
-      Bill.associate = function(models) {
-        models.Bill.hasOne(models.File,{foreignKey:{
-            name: 'bill_id',
-            allowNull: false,
-        }, sourceKey:'id'});
-      };
 
 return File;
 }

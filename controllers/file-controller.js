@@ -44,17 +44,25 @@ exports.create = (req, res) => {
                     var url = "./billUploads/" + nameUUID + "_" + file_name;
                     var upload_date = new Date().toISOString().split('T')[0];
                     var billId = Bill[0].id;
+                    var metaDataObj = {
+                        size: file.size,
+                        encoding: file.encoding,
+                        mimetype: file.mimetype,
+                        md5: file.md5
+                    }
 
                     models.File.create({
                         id: uuid,
                         file_name: file_name,
                         url: url,
                         upload_date: upload_date,
-                        bill_id: billId
+                        bill_id: billId,
+                        metaData: metaDataObj
 
                     }).then(function(File) {
                         file.mv('./billUploads/' + nameUUID + "_" + file_name);
                         File.bill_id = undefined;
+                        File.metaData = undefined;
 
                         models.Bill.update({
                             attachment: File
@@ -112,17 +120,34 @@ exports.getFile = (req, res) => {
             var valid = true;
             valid = bcrypt.compareSync(password, User[0].password) && valid;
             if (valid) {
-                models.File.findOne({
+                models.Bill.findOne({
                     where: {
-                        id: fileId,
-                        bill_id: billId
+                        id: billId,
+                        owner_id: User[0].id
                     }
-                }).then(function(File) {
-                    File.bill_id = undefined;
-                    res.status(200).send(File);
+                }).then(function(UserBill) {
+                    if (UserBill) {
+                        models.File.findOne({
+                            where: {
+                                id: fileId,
+                                bill_id: billId
+                            }
+                        }).then(function(File) {
+                            File.bill_id = undefined;
+                            res.status(200).send(File);
+                        }).catch(function(err) {
+                            res.status(404).send("Bill is not found !");
+                        });
+                    } else
+                        res.status(404).end();
+
                 }).catch(function(err) {
-                    res.status(404).send("Bill is not found !");
+                    console.log(err);
                 });
+            } else {
+                res.statusCode = 401
+                res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+                res.end('Access denied')
             }
         }).catch(function(err) {
             res.statusCode = 401
@@ -155,51 +180,66 @@ exports.deleteFile = (req, res) => {
                 where: {
                     email_address: username
                 }
-            }).then(function(result) {
+            }).then(function(User) {
                 var valid = true;
-                valid = bcrypt.compareSync(password, result[0].password) && valid;
+                valid = bcrypt.compareSync(password, User[0].password) && valid;
                 if (valid) {
-                    models.File.findOne({
+                    models.Bill.findOne({
                         where: {
-                            id: fileId,
-                            bill_id: billId
+                            id: billId,
+                            owner_id: User[0].id
                         }
-                    }).then(function(FileRet) {
-                        var filePath = FileRet.url;
-                        fs.unlink(filePath, function(err) {
-                            if (err) {
-                                res.status(404).send("File is not found at server location !");
-                            } else {
-                                models.File.destroy({
-                                    where: {
-                                        id: fileId,
-                                        bill_id: billId
-                                    }
-                                }).then(function(DelFile) {
-                                    if (DelFile > 0) {
-                                        models.Bill.update({
-                                            attachment: null
-                                        }, {
+                    }).then(function(UserBill) {
+                        if (UserBill) {
+                            models.File.findOne({
+                                where: {
+                                    id: fileId,
+                                    bill_id: billId
+                                }
+                            }).then(function(FileRet) {
+                                var filePath = FileRet.url;
+                                fs.unlink(filePath, function(err) {
+                                    if (err) {
+                                        res.status(404).send("File is not found at server location !");
+                                    } else {
+                                        models.File.destroy({
                                             where: {
-                                                id: billId,
-                                                owner_id: result[0].id
+                                                id: fileId,
+                                                bill_id: billId
                                             }
-                                        }).then(function(BillUpdate) {
-                                            res.status(204).end();
+                                        }).then(function(DelFile) {
+                                            if (DelFile > 0) {
+                                                models.Bill.update({
+                                                    attachment: null
+                                                }, {
+                                                    where: {
+                                                        id: billId,
+                                                        owner_id: User[0].id
+                                                    }
+                                                }).then(function(BillUpdate) {
+                                                    res.status(204).end();
+                                                }).catch(function(err) {
+                                                    console.log(err);
+                                                    res.status(400).send("Issue while updating the Bill after file deletion !");
+                                                });
+                                            } else
+                                                res.status(404).end();
                                         }).catch(function(err) {
                                             console.log(err);
-                                            res.status(400).send("Issue while updating the Bill after file deletion !");
                                         });
-                                    } else
-                                        res.status(404).end();
-                                }).catch(function(err) {
-                                    console.log(err);
+                                    }
                                 });
-                            }
-                        });
+                            }).catch(function(err) {
+                                res.status(404).send("file record doesn't exist !!")
+                            });
+                        } else {
+                            res.status(404).end();
+                        }
+
                     }).catch(function(err) {
-                        res.status(404).send("file record doesn't exist !!")
+                        console.log(err);
                     });
+
                 } else {
                     res.statusCode = 401
                     res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
