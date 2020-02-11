@@ -30,6 +30,7 @@ jobs:
           command: |
             sudo apt-get remove --purge mysql*
             sudo apt-get clean
+            sudo apt-get install lsb-release
             wget https://dev.mysql.com/get/mysql-apt-config_0.8.3-1_all.deb
             sudo dpkg -i mysql-apt-config_0.8.3-1_all.deb
             sudo apt-get -f install
