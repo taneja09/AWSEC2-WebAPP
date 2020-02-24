@@ -2,8 +2,8 @@ require('dotenv').config();
 module.exports = {
   "development": {
     "username": "root",
-    "password": "divinity@1202",
-    "database": "CloudDB",
+    "password": "divinity",
+    "database": "Clouddb",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "logging": false

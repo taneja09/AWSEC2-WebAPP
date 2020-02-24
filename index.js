@@ -11,9 +11,8 @@ const app = express();
 app.set('port',port);
 app.use(bodyParser.json());
 app.use(cors());
-app.use(fileUpload({
-  createParentPath: true
-}));
+app.use(fileUpload());
+
 
 app.get('/',(req,res) => {
     res.json({'message':'Hello Cloud !!'}); 
