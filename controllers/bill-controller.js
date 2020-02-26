@@ -4,6 +4,7 @@ const saltRounds = 10;
 var models = require('../models');
 const uuidv4 = require('uuid/v4');
 const bcrypt = require('bcrypt');
+const util = require('./aws-client-fileUpload');
 
 
 exports.create = (req, res) => {
@@ -325,23 +326,35 @@ exports.viewAllBills = (req, res) => {
                     var valid = true;
                     valid = bcrypt.compareSync(password, result[0].password) && valid;
                     if (valid) {
-                        models.Bill.destroy({
+                        models.Bill.findAll({
                             where: {
                                 id: billId,
                                 owner_id: result[0].id
                             }
-                        }).then(function(UserBill) {
-                            if (UserBill > 0)
-                                res.status(204).end();
-        
-                            else
-                                res.status(404).end();
-        
-                        }).catch(function(err) {
-                            console.log(err);
+                        }).then(function (Bill) {
+                            if (Bill[0].attachment) {
+                                    let filePath = Bill[0].attachment.file_name;
+                                    util.deleteFromS3(filePath,function(Data) {
+                                });
+                            }
+                            models.Bill.destroy({
+                                where: {
+                                    id: billId,
+                                    owner_id: result[0].id
+                                }
+                            }).then(function (UserBill) {
+                                if (UserBill > 0)
+                                    res.status(204).end();
+                                else
+                                    res.status(404).end();
+
+                            }).catch(function (err) {
+                                console.log(err);
+                            });
+                        }).catch(function (err) {
+                            res.status(404).send("Bill Not Found !!")
                         });
-        
-                    } else {
+                    }else {
                         res.statusCode = 401
                         res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
                         res.end('Access denied')
@@ -356,4 +369,4 @@ exports.viewAllBills = (req, res) => {
 
             }
         
-        }
+        };

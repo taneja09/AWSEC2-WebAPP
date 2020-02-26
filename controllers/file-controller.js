@@ -4,8 +4,7 @@ const uuidv4 = require('uuid/v4');
 const bcrypt = require('bcrypt');
 var shortid = require('shortid');
 const fs = require('fs');
-
-
+const util = require('./aws-client-fileUpload');
 
 exports.create = (req, res) => {
     var credentials = auth(req);
@@ -37,58 +36,60 @@ exports.create = (req, res) => {
                         owner_id: User[0].id
                     }
                 }).then(function(Bill) {
-                    if(Bill[0].attachment){
+                    if (Bill[0].attachment) {
                         res.status(400).send("Bill already has a file attached, please delete that before uploading a new File !");
-                    }else{
-                    var uuid = uuidv4();
-                    var nameUUID = shortid.generate();
-                    var file = req.files.myfile;
-                    var file_name = file.name
-                    var url = "./billUploads/" + nameUUID + "_" + file_name;
-                    var upload_date = new Date().toISOString().split('T')[0];
-                    var billId = Bill[0].id;
-                    var metaDataObj = {
-                        size: file.size,
-                        encoding: file.encoding,
-                        mimetype: file.mimetype,
-                        md5: file.md5
-                    }
+                    } else {
+                        var uuid = uuidv4();
+                        var nameUUID = shortid.generate();
+                        var file = req.files.file;
+                        var file_name = file.name
+                        var url = "./billUploads/" + nameUUID + "_" + file_name;
+                        var upload_date = new Date().toISOString().split('T')[0];
+                        var billId = Bill[0].id;
+                        var metaDataObj = {
+                            size: file.size,
+                            encoding: file.encoding,
+                            mimetype: file.mimetype,
+                            md5: file.md5
+                        }
+                        //file.mv('./billUploads/' + nameUUID + "_" + file_name);
+                        util.uploadToS3(file, function(Data) {
+                            models.File.create({
+                                id: uuid,
+                                file_name: file_name,
+                                url: Data.Location,
+                                upload_date: upload_date,
+                                bill_id: billId,
+                                metaData: metaDataObj
 
-                    models.File.create({
-                        id: uuid,
-                        file_name: file_name,
-                        url: url,
-                        upload_date: upload_date,
-                        bill_id: billId,
-                        metaData: metaDataObj
-
-                    }).then(function(File) {
-                        file.mv('./billUploads/' + nameUUID + "_" + file_name);
-                        File.bill_id = undefined;
-                        File.metaData = undefined;
-
-                        models.Bill.update({
-                            attachment: File
-                        }, {
-                            where: {
-                                id: billId,
-                                owner_id: User[0].id
-                            }
-                        }).then(function(BillUpdate) {
-                            res.status(201).send(File);
-                        }).catch(function(err) {
-                            console.log(err);
-                            res.status(400).send("Issue while updating the Bill !");
+                            }).then(function(File) {
+                                File.bill_id = undefined;
+                                File.metaData = undefined;
+                                models.Bill.update({
+                                    attachment: File
+                                }, {
+                                    where: {
+                                        id: billId,
+                                        owner_id: User[0].id
+                                    }
+                                }).then(function(BillUpdate) {
+                                    res.status(201).send(File);
+                                }).catch(function(err) {
+                                    console.log(err);
+                                    res.status(400).send("Issue while updating the Bill !");
+                                });
+                            }).catch(function(err) {
+                                console.log(err);
+                                res.status(400).send("Issue while uploading File !");
+                            });
                         });
-                    }).catch(function(err) {
-                        console.log(err);
-                        res.status(400).send("Issue while uploading File !");
-                    });
                     }
                 }).catch(function(err) {
                     res.status(404).send("Bill is not found !");
                 });
+
             }
+
         }).catch(function(err) {
             res.statusCode = 401
             res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
@@ -164,6 +165,7 @@ exports.getFile = (req, res) => {
 
 }
 
+
 exports.deleteFile = (req, res) => {
     var credentials = auth(req);
     if (!credentials) {
@@ -202,11 +204,8 @@ exports.deleteFile = (req, res) => {
                                     bill_id: billId
                                 }
                             }).then(function(FileRet) {
-                                var filePath = FileRet.url;
-                                fs.unlink(filePath, function(err) {
-                                    if (err) {
-                                        res.status(404).send("File is not found at server location !");
-                                    } else {
+                                var filePath = FileRet.file_name;
+                                util.deleteFromS3(filePath,function(Data) {
                                         models.File.destroy({
                                             where: {
                                                 id: fileId,
@@ -231,9 +230,9 @@ exports.deleteFile = (req, res) => {
                                                 res.status(404).end();
                                         }).catch(function(err) {
                                             console.log(err);
+                                            res.status(400).send("Issue while destroying file record. !");
                                         });
-                                    }
-                                });
+                                    })
                             }).catch(function(err) {
                                 res.status(404).send("file record doesn't exist !!")
                             });
@@ -243,6 +242,7 @@ exports.deleteFile = (req, res) => {
 
                     }).catch(function(err) {
                         console.log(err);
+                        res.status(404).send("Bill record doesn't exist !!")
                     });
 
                 } else {
