@@ -42,8 +42,7 @@ exports.create = (req, res) => {
                         var uuid = uuidv4();
                         var nameUUID = shortid.generate();
                         var file = req.files.file;
-                        var file_name = file.name
-                        var url = "./billUploads/" + nameUUID + "_" + file_name;
+                        var file_name = nameUUID+file.name;
                         var upload_date = new Date().toISOString().split('T')[0];
                         var billId = Bill[0].id;
                         var metaDataObj = {
@@ -52,7 +51,7 @@ exports.create = (req, res) => {
                             mimetype: file.mimetype,
                             md5: file.md5
                         }
-                        //file.mv('./billUploads/' + nameUUID + "_" + file_name);
+                        
                         util.uploadToS3(file, function(Data) {
                             models.File.create({
                                 id: uuid,
