@@ -2,21 +2,21 @@
 const AWS = require('aws-sdk');
 const envParams = require('../config/aws-config');
 
-const ACCESS_KEY = envParams.AWS_ACCESS_KEY;
-const ACCESS_KEY_SECRET = envParams.AWS_SECRET_ACCESS_KEY;
 const REGION = envParams.REGION;
 const BUCKET = envParams.BUCKET;
 
 AWS.config.update({
-    accessKeyId: ACCESS_KEY,
-    secretAccessKey: ACCESS_KEY_SECRET,
     region: REGION,
 });
 
+AWS.config.credentials = new AWS.EC2MetadataCredentials({
+    httpOptions: { timeout: 5000 },
+    maxRetries: 10,
+    retryDelayOptions: { base: 200 }
+})
+
 function uploadToS3(file, callback) {
     let s3bucket = new AWS.S3({
-      accessKeyId: ACCESS_KEY,
-      secretAccessKey: ACCESS_KEY_SECRET,
       Bucket: BUCKET
     });
 
@@ -41,8 +41,6 @@ function uploadToS3(file, callback) {
 
   function deleteFromS3(file, callback) {
     let s3bucket = new AWS.S3({
-      accessKeyId: ACCESS_KEY,
-      secretAccessKey: ACCESS_KEY_SECRET,
       Bucket: BUCKET
     });
 
