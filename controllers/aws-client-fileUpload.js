@@ -15,14 +15,14 @@ AWS.config.credentials = new AWS.EC2MetadataCredentials({
     retryDelayOptions: { base: 200 }
 })
 
-function uploadToS3(file, callback) {
+function uploadToS3(file,file_name, callback) {
     let s3bucket = new AWS.S3({
       Bucket: BUCKET
     });
 
     const params = {
         Bucket: BUCKET,
-        Key:file.name,
+        Key:file_name,
         Body:file.data
     }
 
