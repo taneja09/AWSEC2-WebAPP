@@ -42,7 +42,7 @@ exports.create = (req, res) => {
                         var uuid = uuidv4();
                         var nameUUID = shortid.generate();
                         var file = req.files.file;
-                        var file_name = file.name +"_"+nameUUID;
+                        var file_name = nameUUID+"_"+file.name;
                         var upload_date = new Date().toISOString().split('T')[0];
                         var billId = Bill[0].id;
                         var metaDataObj = {
