@@ -4,7 +4,6 @@ jobs:
   pr_check:
     docker:
       - image: circleci/node:10.12.0
-        working_directory: ~/webapp
 
     steps:
       - checkout #check out the source code from the repository
@@ -28,8 +27,9 @@ jobs:
             pwd
             cd ..
             pwd
-            zip -r webapp.zip webapp/
+            zip -r webapp.zip project/
             pwd
+            ls
 
 
   build_deploy:
