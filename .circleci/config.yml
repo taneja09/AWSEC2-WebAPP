@@ -4,14 +4,7 @@ jobs:
   pr_check:
     docker:
       - image: circleci/node:10.12.0
-        environment:
-          MYSQL_ROOT_PASSWORD: "helloworld"
-          MYSQL_HOST: "127.0.0.1"
-          MYSQL_DATABASE: "CloudDB"
-          MYSQL_PORT: 3306
-          MYSQL_USERNAME: "root"
-          MYSQL_DIALECT: "mysql"
-          NODE_ENV: test
+        working_directory: ~/webapp
 
     steps:
       - checkout #check out the source code from the repository
@@ -26,13 +19,16 @@ jobs:
           command: |
             sleep 10
             npm test
+
       - run:
           name: Zip application and send to s3 bucket
           command: |
+            rm -rf node_modules/
+            ls -l
             pwd
             cd ..
             pwd
-            zip -r webapp.zip project/
+            zip -r webapp.zip webapp/
             pwd
 
 
