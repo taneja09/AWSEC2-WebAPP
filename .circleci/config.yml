@@ -20,7 +20,7 @@ jobs:
             npm test
 
       - run:
-          name: Zip application and send to s3 bucket
+          name: Zip application
           command: |
             rm -rf node_modules/
             ls -l
@@ -30,6 +30,13 @@ jobs:
             zip -r webapp.zip project/
             pwd
             ls
+
+      - run:
+          name: Send zipped application to aws s3 bucket
+          command: |
+            sudo pip install awscli
+            aws s3 sync webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
+
 
 
   build_deploy:
