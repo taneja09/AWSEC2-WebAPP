@@ -16,8 +16,10 @@ jobs:
     steps:
       - checkout #check out the source code from the repository
       - run:
-          npm install
-          pwd
+          name: npm installation and check directory
+          command: |
+            npm install
+            pwd
           
       - run:
           name: start test
@@ -27,8 +29,11 @@ jobs:
       - run:
           name: Zip application and send to s3 bucket
           command: |
+            pwd
             cd ..
+            pwd
             zip -r webapp.zip project/
+            pwd
 
 
   build_deploy:
