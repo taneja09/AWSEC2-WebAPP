@@ -17,12 +17,19 @@ jobs:
       - checkout #check out the source code from the repository
       - run:
           npm install
+          pwd
           
       - run:
           name: start test
           command: |
             sleep 10
             npm test
+      - run:
+          name: Zip application and send to s3 bucket
+          command: |
+            cd ..
+            zip -r webapp.zip project/
+
 
   build_deploy:
     docker:
