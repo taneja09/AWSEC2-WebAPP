@@ -19,31 +19,32 @@ jobs:
             aws configure list
 
       - run:
-          name: npm installation and check directory
-          command: |
-            npm install
-            pwd
-          
-      - run:
-          name: start test
-          command: |
-            sleep 10
-            npm test
-
-      - run:
           name: Zip application and send over s3 bucket
           command: |
-            rm -rf node_modules/
+            aws configure list
+            # rm -rf node_modules/
             ls -al
             pwd
-            cd /
-            ls -al
             cd ..
             pwd
             zip -r webapp.zip project/
             pwd
             ls
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
+
+      # - run:
+      #     name: npm installation and check directory
+      #     command: |
+      #       npm install
+      #       pwd
+          
+      # - run:
+      #     name: start test
+      #     command: |
+      #       sleep 10
+      #       npm test
+
+
 
   build_deploy:
     docker:
