@@ -12,13 +12,13 @@ jobs:
             sudo apt-get update && sudo apt-get install python-pip
             sudo pip install awscli
             sudo aws --version
-            aws configure set aws_access_key_id ${aws_access_key}
-            aws configure set aws_secret_access_key ${aws_secret_key} 
-            aws configure set region ${aws_region}
+            aws configure set aws_access_key_id ${aws_access_key} --profile default
+            aws configure set aws_secret_access_key ${aws_secret_key} --profile default
+            aws configure set region ${aws_region} --profile default
             aws configure list
 
       - checkout #check out the source code from the repository
-      
+
       - run:
           name: npm installation and check directory
           command: |
@@ -39,6 +39,7 @@ jobs:
             pwd
             cd ..
             pwd
+            AWS_DEFAULT_PROFILE=default
             zip -r webapp.zip project/
             pwd
             ls
