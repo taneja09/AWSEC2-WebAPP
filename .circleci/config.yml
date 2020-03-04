@@ -43,7 +43,7 @@ jobs:
             ls -al
             zip -r webapp.zip webapp/
             aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
-            aws deploy create-deployment --application-name CodeDeployAppName \
+            aws deploy create-deployment --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name csye6225-webapp-deployment \
             --s3-location bucket=codedeploy.divyataneja.me,bundleType=zip,key=webapp.zip
