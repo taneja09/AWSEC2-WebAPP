@@ -22,7 +22,7 @@ jobs:
             pwd
             ls -al
             zip -r webapp.zip myrepo/
-            sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
+            aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
 
             
 
