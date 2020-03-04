@@ -39,7 +39,7 @@ jobs:
             pwd
             cd ..
             pwd
-            AWS_DEFAULT_PROFILE=default
+            export AWS_DEFAULT_PROFILE=default
             zip -r webapp.zip project/
             pwd
             ls
