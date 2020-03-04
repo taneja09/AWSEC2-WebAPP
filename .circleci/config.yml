@@ -40,13 +40,13 @@ jobs:
             sudo apt-get update && sudo apt-get install python-pip
             sudo pip install awscli
             sudo aws --version
-            export aws_acces_key_id=${aws_access_key}
-            export aws_secret_access_key=${aws_secret_key}
-            export aws_default_region=${aws_region} 
+            aws configure --profile test set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+            aws configure --profile test set aws_secret_access_key ${aws_secret_key}
+            aws configure --profile test set aws_default_region ${aws_region} 
+            aws configure --profile test list
             printenv
             pwd
             ls
-            echo ${aws_access_key}
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
 
 
