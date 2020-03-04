@@ -41,6 +41,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=${aws_secret_key}
             export AWS_DEFAULT_REGION=${aws_region} 
             printenv
+            cd ..
             pwd
             ls
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
