@@ -42,7 +42,7 @@ jobs:
             pwd
             ls -al
             cd webapp
-            zip -r ../webapp.zip *
+            zip -r webapp.zip *
             aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
             aws deploy create-deployment --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.OneAtATime \
