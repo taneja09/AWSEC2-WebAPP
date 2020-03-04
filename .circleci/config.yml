@@ -27,6 +27,7 @@ jobs:
             pwd
             cd ..
             pwd
+            aws configure list
             zip -r webapp.zip project/
             pwd
             ls
