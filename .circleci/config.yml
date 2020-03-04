@@ -9,16 +9,13 @@ jobs:
       - run:
           name: Install aws cli and configure
           command: |
-            sudo apt-get update && sudo apt-get install python-pip
+            sudo apt-get update
             sudo pip install awscli
             sudo aws --version
             aws configure set aws_access_key_id ${aws_access_key}
             aws configure set aws_secret_access_key ${aws_secret_key}
             aws configure set region ${aws_region}
             aws configure list
-            ls -a
-            cd .aws
-            cat credentials
 
       - checkout #check out the source code from the repository
 
@@ -42,7 +39,6 @@ jobs:
             pwd
             cd ..
             pwd
-            export AWS_DEFAULT_PROFILE=dev
             zip -r webapp.zip project/
             pwd
             ls
