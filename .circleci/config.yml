@@ -26,7 +26,7 @@ jobs:
       - run:
           name: remove node_modules
           command: |
-            /home/circleci/project/webapp/
+            cd /home/circleci/project/webapp/
             rm -rf node_modules/
 
       - run:
