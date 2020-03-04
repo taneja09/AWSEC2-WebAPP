@@ -7,7 +7,6 @@ jobs:
 
     steps:
       - checkout: #check out the source code from the repository
-          path: /home/myrepo
 
       - run:
           name: Install aws cli and configure
@@ -19,20 +18,11 @@ jobs:
             aws configure set aws_secret_access_key ${aws_secret_key}
             aws configure set region us-east-1
             aws configure list
-
-      - run:
-          name: Zip application and send over s3 bucket
-          command: |
-            aws configure list  
-            cd home/
-            pwd
             ls -al
-            pwd
-            aws configure list
-            zip -r webapp.zip myrepo/
-            pwd
-            ls
+            zip -r webapp.zip project/
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
+
+            
 
       # - run:
       #     name: npm installation and check directory
