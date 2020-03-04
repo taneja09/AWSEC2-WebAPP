@@ -7,6 +7,8 @@ jobs:
 
     steps:
       - checkout #check out the source code from the repository
+          path: /home/myrepo
+
       - run:
           name: Install aws cli and configure
           command: |
@@ -21,14 +23,13 @@ jobs:
       - run:
           name: Zip application and send over s3 bucket
           command: |
-            aws configure list
-            # rm -rf node_modules/
+            aws configure list  
+            cd home/
+            pwd
             ls -al
             pwd
-            cd ..
-            pwd
             aws configure list
-            zip -r webapp.zip project/
+            zip -r webapp.zip myrepo/
             pwd
             ls
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
