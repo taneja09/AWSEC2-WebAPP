@@ -18,9 +18,9 @@ jobs:
             aws configure list
 
       - run:
-        name: check ubuntu home
-        command: |
-            cd home/ubuntu/
+          name: check ubuntu home
+          command: |
+            cd home/ubuntu
             ls -al
 
       - checkout #check out the source code from the repository
