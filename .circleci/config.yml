@@ -17,7 +17,7 @@ jobs:
             aws configure set region ${aws_region}
             aws configure list
 
-      -run:
+      - run:
         name: check ubuntu home
         command: |
             cd home/ubuntu/
