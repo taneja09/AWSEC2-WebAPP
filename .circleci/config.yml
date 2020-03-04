@@ -36,6 +36,8 @@ jobs:
             rm -rf node_modules/
             ls -l
             pwd
+            cd /
+            ls -al
             cd ..
             pwd
             zip -r webapp.zip project/
