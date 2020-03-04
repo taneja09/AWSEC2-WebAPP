@@ -41,7 +41,8 @@ jobs:
             aws configure list
             pwd
             ls -al
-            zip -r webapp.zip webapp/
+            cd webapp
+            zip -r ../webapp.zip *
             aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
             aws deploy create-deployment --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.OneAtATime \
