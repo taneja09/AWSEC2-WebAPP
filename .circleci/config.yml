@@ -34,9 +34,15 @@ jobs:
       - run:
           name: Send zipped application to aws s3 bucket
           command: |
+            sudo apt-get update && sudo apt-get install python-pip
             sudo pip install awscli
-            aws s3 sync webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
-
+            sudo aws --version
+            aws configure \
+            set AWS_ACCESS_KEY_ID ${aws_access_key} \
+            set AWS_SECRET_ACCESS_KEY ${aws_secret_key} \
+            set AWS_DEFAULT_REGION ${aws_region} 
+            printenv
+            sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
 
 
   build_deploy:
