@@ -38,9 +38,9 @@ jobs:
             sudo pip install awscli
             sudo aws --version
             aws configure \
-            set AWS_ACCESS_KEY_ID ${aws_access_key} \
-            set AWS_SECRET_ACCESS_KEY ${aws_secret_key} \
-            set AWS_DEFAULT_REGION ${aws_region} 
+            export AWS_ACCESS_KEY_ID=${aws_access_key} \
+            export AWS_SECRET_ACCESS_KEY=${aws_secret_key} \
+            export AWS_DEFAULT_REGION=${aws_region} 
             printenv
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
 
