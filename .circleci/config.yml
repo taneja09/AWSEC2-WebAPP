@@ -6,7 +6,19 @@ jobs:
       - image: circleci/node:10.12.0
 
     steps:
+      - run:
+          name: Install aws cli and configure
+          command: |
+            sudo apt-get update && sudo apt-get install python-pip
+            sudo pip install awscli
+            sudo aws --version
+            aws configure set aws_access_key_id ${aws_access_key}
+            aws configure set aws_secret_access_key ${aws_secret_key} 
+            aws configure set region ${aws_region}
+            aws configure list
+
       - checkout #check out the source code from the repository
+      
       - run:
           name: npm installation and check directory
           command: |
@@ -20,7 +32,7 @@ jobs:
             npm test
 
       - run:
-          name: Zip application
+          name: Zip application and send over s3 bucket
           command: |
             rm -rf node_modules/
             ls -l
@@ -30,25 +42,7 @@ jobs:
             zip -r webapp.zip project/
             pwd
             ls
-
-      - run:
-          name: Send zipped application to aws s3 bucket
-          command: |
-            cd ..
-            pwd
-            ls
-            sudo apt-get update && sudo apt-get install python-pip
-            sudo pip install awscli
-            sudo aws --version
-            aws configure set aws_access_key_id ${aws_access_key}
-            aws configure set aws_secret_access_key ${aws_secret_key} 
-            aws configure set default.region ${aws_region}
-            aws configure list
-            printenv
-            pwd
-            ls
             sudo aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
-
 
   build_deploy:
     docker:
