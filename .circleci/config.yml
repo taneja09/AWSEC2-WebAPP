@@ -12,18 +12,21 @@ jobs:
       - run:
           name: npm installation and check directory
           command: |
+            cd /home/circleci/project/webapp/
             npm install
             pwd
           
       - run:
           name: start test
           command: |
+            cd /home/circleci/project/webapp/
             sleep 10
             npm test
 
       - run:
           name: remove node_modules
           command: |
+            /home/circleci/project/webapp/
             rm -rf node_modules/
 
       - run:
