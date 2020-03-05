@@ -2,8 +2,7 @@
 
 # This script is executed after the source is copied to the instances
 
-cp /myvariables.sh /home/ubuntu/cddemo/scripts/
 cd /home/ubuntu/cddemo
-source ./myvariables.sh
+source ./etc/profile.d/myvariables.sh
 printenv
 npm install
