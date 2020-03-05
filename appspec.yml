@@ -2,10 +2,14 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/webapp/
+    destination: /
 hooks:
-  AfterInstall:
+  BeforeInstall:
     - location: scripts/install_dependencies.sh
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: scripts/install_nm.sh
       timeout: 300
       runas: root
   ApplicationStart:

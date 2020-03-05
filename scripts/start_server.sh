@@ -1,7 +1,6 @@
 #!/bin/bash
 # sudo chmod 755 /var/www/server.js # optional
 # this will restart app/server on instance reboot
-crontab -l | { cat; echo "@reboot pm2 start /var/webapp/index.js -i 0 --name \"webapp\""; } | crontab -
-sudo pm2 stop webapp
+forever stopall
 # actually start the server
-sudo pm2 start /var/webapp/index.js -i 0 --name "webapp"
+forever start /home/ubuntu/nodejs/index.js
