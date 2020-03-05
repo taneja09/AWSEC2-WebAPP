@@ -4,11 +4,10 @@ files:
   - source: /
     destination: /home/ubuntu/cddemo
 permissions:
-  - object: .
-    pattern: "**"
+  - object: /home/ubuntu/cddemo/scripts
+    pattern: "*.sh"
     owner: ubuntu
-    group: ubuntu
-    mode: 766
+    mode: 755
     type:
       - file
 hooks:
