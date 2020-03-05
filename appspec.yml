@@ -2,9 +2,9 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /usr/cddemo
+    destination: /home/ubuntu/cddemo
 permissions:
-  - object: /usr/cddemo/scripts
+  - object: /home/ubuntu/cddemo/scripts
     pattern: "*.sh"
     owner: ubuntu
     mode: 755
@@ -14,15 +14,19 @@ hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
       timeout: 300
+      runas: ubuntu
   AfterInstall:
     - location: scripts/after_install.sh
       timeout: 300
+      runas: ubuntu
   ApplicationStart:
     - location: scripts/start_server.sh
       timeout: 300
+      runas: ubuntu
   ApplicationStop:
     - location: scripts/stop_server.sh
       timeout: 300
+      runas: ubuntu
   # ValidateService:
   #   - location: scripts/validate_server.sh
   #     timeout: 300
