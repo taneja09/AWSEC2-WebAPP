@@ -1,2 +1,4 @@
 #!/bin/bash
-forever stopall
+
+# This script is used to stop application
+sudo pm2 stop webapp

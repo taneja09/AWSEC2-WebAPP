@@ -1,5 +1,7 @@
+
 #!/bin/bash
-# sudo chmod 755 /var/www/server.js # optional
-# this will restart app/server on instance reboot
-# actually start the server
-forever start /home/ubuntu/nodejs/index.js
+
+# This script is used to start the application
+
+cd /usr/cddemo
+pm2 start /usr/cddemo/index.js --name "webapp"
