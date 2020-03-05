@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # This script is used to stop application
-killall node
+killall -s KILL node
