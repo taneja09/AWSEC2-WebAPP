@@ -2,5 +2,5 @@
 #!/bin/bash
 
 # This script is used to start the application
-
-pm2 start /home/ubuntu/cddemo/index.js --name "webapp"
+cd /home/ubuntu/cddemo
+pm2 start index.js -i 0 --name "webapp"
