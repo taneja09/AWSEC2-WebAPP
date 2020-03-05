@@ -2,7 +2,7 @@
 #!/bin/bash
 
 # This script is executed after the source is copied to the instances
-
-.  ./home/myvariables.sh
+/home/ubuntu/cddemo
+. /etc/environment
 printenv
 npm install
