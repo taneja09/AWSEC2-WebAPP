@@ -45,7 +45,7 @@ jobs:
             ls -al
             cd webapp
             zip -r ${BUILD_COUNTER}_webapp.zip *
-            aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
+            aws s3 cp ${BUILD_COUNTER}_webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
             aws deploy create-deployment --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name csye6225-webapp-deployment \
