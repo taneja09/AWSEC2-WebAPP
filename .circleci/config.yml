@@ -42,13 +42,14 @@ jobs:
             pwd
             ls -al
             cd webapp
-            zip -r ${CIRCLE_BUILD_NUM}_webapp.zip *
+            BUILD_COUNTER="${CIRCLE_BUILD_NUM}"
+            zip -r BUILD_COUNTER_webapp.zip *
             aws s3 cp webapp.zip s3://codedeploy.divyataneja.me --region us-east-1 
             aws deploy create-deployment --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name csye6225-webapp-deployment \
             --ignore-application-stop-failures \
-            --s3-location bucket=codedeploy.divyataneja.me,bundleType=zip,key=${CIRCLE_BUILD_NUM}_webapp.zip
+            --s3-location bucket=codedeploy.divyataneja.me,bundleType=zip,key=BUILD_COUNTER_webapp.zip
 
             
   build_deploy:
