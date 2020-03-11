@@ -1,6 +1,21 @@
 ---
 version: 2
 jobs:
+  pr-check:
+    docker:
+      - image: circleci/node:10.12.0
+
+    steps:
+      - checkout #check out the source code from the repository
+      - run:
+          npm install
+          
+      - run:
+          name: start test
+          command: |
+            sleep 10
+            npm test
+
   build_deploy:
     docker:
       - image: circleci/node:10.12.0
@@ -52,21 +67,6 @@ jobs:
             --ignore-application-stop-failures \
             --s3-location bucket=${code_deploy_bucket},bundleType=zip,key=${BUILD_COUNTER}_webapp.zip
 
-            
-  pr-check:
-    docker:
-      - image: circleci/node:10.12.0
-
-    steps:
-      - checkout #check out the source code from the repository
-      - run:
-          npm install
-          
-      - run:
-          name: start test
-          command: |
-            sleep 10
-            npm test
 
 workflows:
   version: 2
