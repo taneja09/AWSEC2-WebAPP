@@ -1,17 +1,9 @@
 ---
 version: 2
 jobs:
-  pr_check:
+  pr-check:
     docker:
       - image: circleci/node:10.12.0
-        environment:
-          MYSQL_ROOT_PASSWORD: "helloworld"
-          MYSQL_HOST: "127.0.0.1"
-          MYSQL_DATABASE: "CloudDB"
-          MYSQL_PORT: 3306
-          MYSQL_USERNAME: "root"
-          MYSQL_DIALECT: "mysql"
-          NODE_ENV: test
 
     steps:
       - checkout #check out the source code from the repository
@@ -27,25 +19,54 @@ jobs:
   build_deploy:
     docker:
       - image: circleci/node:10.12.0
-        environment:
-          MYSQL_ROOT_PASSWORD: "helloworld"
-          MYSQL_HOST: "127.0.0.1"
-          MYSQL_DATABASE: "CloudDB"
-          MYSQL_PORT: 3306
-          MYSQL_USERNAME: "root"
-          MYSQL_DIALECT: "mysql"
-          NODE_ENV: test
 
     steps:
-      - checkout #check out the source code from the repository
+      - checkout: #check out the source code from the repository
+          path: /home/circleci/project/webapp/
+
       - run:
-          npm install
+          name: npm installation and check directory
+          command: |
+            cd /home/circleci/project/webapp/
+            npm install
+            pwd
           
       - run:
           name: start test
           command: |
+            cd /home/circleci/project/webapp/
             sleep 10
             npm test
+
+      - run:
+          name: remove node_modules
+          command: |
+            cd /home/circleci/project/webapp/
+            rm -rf node_modules/
+
+      - run:
+          name: Install aws cli and configure
+          command: |
+            sudo apt-get update && sudo apt-get install python-pip
+            sudo pip install awscli
+            sudo aws --version
+            aws configure set aws_access_key_id ${aws_access_key}
+            aws configure set aws_secret_access_key ${aws_secret_key}
+            aws configure set region us-east-1
+            aws configure list
+            pwd
+            BUILD_COUNTER="${CIRCLE_BUILD_NUM}"
+            echo "${BUILD_COUNTER}"
+            ls -al
+            cd webapp
+            zip -r ${BUILD_COUNTER}_webapp.zip *
+            aws s3 cp ${BUILD_COUNTER}_webapp.zip s3://${code_deploy_bucket} --region us-east-1 
+            aws deploy create-deployment --application-name csye6225-webapp \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --deployment-group-name csye6225-webapp-deployment \
+            --ignore-application-stop-failures \
+            --s3-location bucket=${code_deploy_bucket},bundleType=zip,key=${BUILD_COUNTER}_webapp.zip
+
 
 workflows:
   version: 2
