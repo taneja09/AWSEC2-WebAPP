@@ -1,7 +1,7 @@
 ---
 version: 2
 jobs:
-  pr-check:
+  pr_check:
     docker:
       - image: circleci/node:10.12.0
 
@@ -60,11 +60,10 @@ jobs:
             ls -al
             cd webapp
             zip -r ${BUILD_COUNTER}_webapp.zip *
-            aws s3 cp ${BUILD_COUNTER}_webapp.zip s3://${code_deploy_bucket} --region us-east-1 
+            aws s3 cp ${BUILD_COUNTER}_webapp.zip s3://${code_deploy_bucket} --region ${aws_region}
             aws deploy create-deployment --application-name csye6225-webapp \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name csye6225-webapp-deployment \
-            --ignore-application-stop-failures \
             --s3-location bucket=${code_deploy_bucket},bundleType=zip,key=${BUILD_COUNTER}_webapp.zip
 
 
