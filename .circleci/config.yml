@@ -1,7 +1,7 @@
 ---
 version: 2
 jobs:
-  pr-check:
+  pr_check:
     docker:
       - image: circleci/node:10.12.0
 
