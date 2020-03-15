@@ -1,8 +1,6 @@
 const request = require('supertest');
 const express = require('express');
 var bodyParser = require('body-parser');
-const AppLogger = require('../app-logs/loggerFactory');
-const logger = AppLogger.defaultLogProvider("test-file");
 
 const app = express();
 app.use(bodyParser.json())
