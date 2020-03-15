@@ -10,4 +10,4 @@ echo "check the new environment variables"
 printenv
 npm install
 
-cp /home/ubuntu/cddemo/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/
+sudo cp /home/ubuntu/cddemo/cloudwatch-config.json /opt/aws/amazon-cloudwatch-agent/etc/
