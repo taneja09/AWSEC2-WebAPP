@@ -9,3 +9,5 @@ cd /home/ubuntu/cddemo
 echo "check the new environment variables"
 printenv
 npm install
+
+cp /home/ubuntu/cddemo/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/
