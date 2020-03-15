@@ -11,3 +11,4 @@ printenv
 npm install
 
 sudo cp /home/ubuntu/cddemo/cloudwatch-config.json /opt/aws/amazon-cloudwatch-agent/etc/
+echo "copied cloud config to provided path!"
