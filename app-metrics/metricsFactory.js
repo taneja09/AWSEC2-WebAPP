@@ -1,21 +1,21 @@
 var SDC = require('statsd-client'),
-metrics = new SDC({host: 'localhost', port:8125});
+metrics = new SDC({port:8125});
 
 //*********  USER Metrics **************/
 //API Counter
-// metrics.counter("User.POST.addUser");
-// metrics.counter("User.GET.viewUser");
-// metrics.counter("User.PUT.updateUser");
+metrics.counter("User.POST.addUser");
+metrics.counter("User.GET.viewUser");
+metrics.counter("User.PUT.updateUser");
 
 //API Completion timer
-// metrics.timing("User.POST.APIComplete");
-// metrics.timing("User.GET.APIComplete");
-// metrics.timing("User.PUT.APIComplete");
+metrics.timing("User.POST.APIComplete");
+metrics.timing("User.GET.APIComplete");
+metrics.timing("User.PUT.APIComplete");
 
 //Database Query Completion timer
-// metrics.timing("User.POST.DBQueryComplete");
-// metrics.timing("User.GET.DBQueryComplete");
-// metrics.timing("User.PUT.DBQueryComplete");
+metrics.timing("User.POST.DBQueryComplete");
+metrics.timing("User.GET.DBQueryComplete");
+metrics.timing("User.PUT.DBQueryComplete");
 //*****************************************/
 
 
