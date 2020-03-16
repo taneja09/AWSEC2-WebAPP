@@ -117,7 +117,7 @@ exports.view = (req, res) => {
 						account_updated: result[0].account_updated
 					}
 					res.statusCode = 200
-					var apiEndTime = timecalculator.TimeInMilliseconds();
+					var apiEndTime = timecalculator.TimeInMilliseconds();s
 					Usermetrics.timing("User.GET.DBQueryComplete",DBQueryEndTime-DBQueryStartTime);
 					Usermetrics.timing("User.GET.APIComplete",apiEndTime-apiStartTime);
 					res.send(UserFound);
