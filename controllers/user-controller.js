@@ -70,8 +70,8 @@ exports.create = (req, res) => {
 					logger.info("User created successfully");
 					User.password = undefined;
 					var apiEndTime = timecalculator.TimeInMilliseconds();
-					Usermetrics.timing("User.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
-					Usermetrics.timing("User.POST.APIComplete",apiEndTime-apiStartTime);
+					//Usermetrics.timing("User.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
+					//Usermetrics.timing("User.POST.APIComplete",apiEndTime-apiStartTime);
                     res.status(201).send(User);
                 }).catch(function(err){
 					logger.error("User already exist");
@@ -118,8 +118,8 @@ exports.view = (req, res) => {
 					}
 					res.statusCode = 200
 					var apiEndTime = timecalculator.TimeInMilliseconds();
-					Usermetrics.timing("User.GET.DBQueryComplete",DBQueryEndTime-DBQueryStartTime);
-					Usermetrics.timing("User.GET.APIComplete",apiEndTime-apiStartTime);
+					//Usermetrics.timing("User.GET.DBQueryComplete",DBQueryEndTime-DBQueryStartTime);
+					//Usermetrics.timing("User.GET.APIComplete",apiEndTime-apiStartTime);
 					console.log(Usermetrics);
 					res.send(UserFound);
 				}else {
