@@ -10,7 +10,7 @@ else
     echo "***************Reloading the cloudwatch service**************"
 
     cd /home/ubuntu/cddemo
-    node node_modules/statsd/stats.js app-metrics/stasd-config.json > /dev/null 2> /dev/null < /dev/null &
+    node node_modules/statsd/stats.js app-metrics/statsd-config.json > /dev/null 2> /dev/null < /dev/null &
     echo "***************Reloading the cloudwatch service**************"
 
     exit 0
