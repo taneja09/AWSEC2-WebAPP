@@ -9,7 +9,7 @@ module.exports = (app) => {
     app.put('/v1/user/self',user.update);
 
     app.post('/v1/bill',bill.create);
-    app.get('/v2/bills',bill.viewAllBills);
+    app.get('/v3/bills',bill.viewAllBills);
     app.get('/v1/bill/:id',bill.getBill);
     app.put('/v1/bill/:id',bill.updateBill);
     app.delete('/v1/bill/:id',bill.deleteBill);
