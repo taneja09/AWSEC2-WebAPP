@@ -1,9 +1,9 @@
 {
-    "backends": [ "aws-cloudwatch-statsd-backend"],
-    "cloudwatch":
+    backends: [ "aws-cloudwatch-statsd-backend"],
+    cloudwatch:
         {
-        "iamRole":"any",
-        "region": "us-east-1"
+        iamRole:'any',
+        region: 'us-east-1'
         }
     
 }
