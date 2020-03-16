@@ -1,5 +1,5 @@
 var SDC = require('statsd-client'),
-metrics = new SDC();
+metrics = new SDC({host: 'localhost', port:8125});
 
 //*********  USER Metrics **************/
 //API Counter
