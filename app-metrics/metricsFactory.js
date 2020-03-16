@@ -1,4 +1,4 @@
-var SDC = require('node-statsd'),
+var SDC = require('statsd-client'),
 metrics = new SDC();
 
 //*********  USER Metrics **************/
