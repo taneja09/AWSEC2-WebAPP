@@ -2,7 +2,8 @@
     "backends": [ "aws-cloudwatch-statsd-backend"],
     "cloudwatch":
         {
-        "iamRole":"CodeDeployEC2ServiceRole",
+        "accessKeyId": "ASIAVGXWVVLN2OEIJDPD",
+        "secretAccessKey":"YzwtSk9vmO97d6tMwoRaLIZSoFLQKZjVU2I1Lp0Y", 
         "region": "us-east-1"
     }
 }
