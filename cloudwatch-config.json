@@ -10,7 +10,8 @@
                     {
                         "file_path": "/opt/csye6225.log",
                         "log_group_name": "csye6225",
-                        "log_stream_name": "webapp"
+                        "log_stream_name": "webapp",
+                        "timezone": "UTC"
                     }
                 ]
             }
@@ -21,7 +22,8 @@
         "metrics_collected": {
         "statsd": {
             "service_address":":8125",
-            "metrics_collection_interval":60
+            "metrics_collection_interval":10,
+            "metrics_aggregation_interval":60
             }
         },
         "namespace":"mywebapp"
