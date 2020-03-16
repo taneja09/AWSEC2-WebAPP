@@ -7,6 +7,11 @@ if [ "$listencount" -lt 1 ]; then
     exit 1
 else
     sudo systemctl reload-or-restart cloudwatch.service
-    echo "Reloading the cloudwatch service"
+    echo "***************Reloading the cloudwatch service**************"
+
+    cd /home/ubuntu/cddemo
+    node node_modules/statsd/stats.js app-metrics/stasd-config.json > /dev/null 2> /dev/null < /dev/null &
+    echo "***************Reloading the cloudwatch service**************"
+
     exit 0
 fi

@@ -7,9 +7,13 @@ const bcrypt = require('bcrypt');
 const util = require('./aws-client-fileUpload');
 const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("Bill-controller");
+const Billmetrics = require('../app-metrics/metricsFactory');
+const timecalculator = require('./timingController');
 
 
 exports.create = (req, res) => {
+    Billmetrics.increment("Bill.POST.addBill");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
         logger.error("No authorization credentials found in request");
@@ -66,6 +70,7 @@ exports.create = (req, res) => {
                         });
                     } 
                     else {
+                        var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                         amount_due = amount_due.toFixed(2);
                         models.Bill.create({
                             id: uuid,
@@ -81,6 +86,9 @@ exports.create = (req, res) => {
                             attachment: fileAttached
                         }).then(function(Bill) {
                             logger.info("Bill created successfully");
+                            var apiEndTime = timecalculator.TimeInMilliseconds();
+                            Billmetrics.timing("Bill.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                            Billmetrics.timing("Bill.POST.APIComplete",apiEndTime-apiStartTime);
                             res.status(201).send(Bill);
                         }).catch(function(err){
                             logger.error("Couldn't create Bill due to some issue");
@@ -104,6 +112,8 @@ exports.create = (req, res) => {
 }
 
 exports.viewAllBills = (req, res) => {
+    Billmetrics.increment("Bill.GET.viewAllBills");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
         logger.error("No authorization credentials found in request");
@@ -121,12 +131,16 @@ exports.viewAllBills = (req, res) => {
                 var valid = true;
                 valid = bcrypt.compareSync(password, result[0].password) && valid;
                 if (valid) {
+                    var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                     models.Bill.findAll({
                         where: {
                             owner_id: result[0].id
                         }
                     }).then(function(UserBills){
                         logger.info("Bills found in system");
+                        var apiEndTime = timecalculator.TimeInMilliseconds();
+                        Billmetrics.timing("Bill.GETALL.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                        Billmetrics.timing("Bill.GETALL.APIComplete",apiEndTime-apiStartTime);
                         res.status(200).send(UserBills);
                     }).catch(function(err){
                         logger.info("Bills coudn't be found due to some issue");
@@ -152,6 +166,8 @@ exports.viewAllBills = (req, res) => {
     }
 
     exports.getBill = (req, res) => {
+        Billmetrics.increment("Bill.GET.viewBill");
+        var apiStartTime = timecalculator.TimeInMilliseconds();
         var credentials = auth(req);
         if (!credentials) {
             logger.error("No authorization credentials found in request");
@@ -170,6 +186,7 @@ exports.viewAllBills = (req, res) => {
                 var valid = true;
                 valid = bcrypt.compareSync(password, result[0].password) && valid;
                 if (valid) {
+                    var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                     models.Bill.findOne({
                         where: {
                             id: billId,
@@ -178,6 +195,9 @@ exports.viewAllBills = (req, res) => {
                     }).then(function(UserBill) {
                         if (UserBill){
                             logger.info("Bill details found in system");
+                            var apiEndTime = timecalculator.TimeInMilliseconds();
+                            Billmetrics.timing("Bill.GET.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                            Billmetrics.timing("Bill.GET.APIComplete",apiEndTime-apiStartTime);
                             res.status(200).send(UserBill);
                         }
     
@@ -209,6 +229,8 @@ exports.viewAllBills = (req, res) => {
     }
 
     exports.updateBill = (req, res) => {
+        Billmetrics.increment("Bill.PUT.updateBill");
+        var apiStartTime = timecalculator.TimeInMilliseconds();
             var credentials = auth(req);
             if (!credentials) {
                 logger.error("No authorization credentials found in request");
@@ -272,6 +294,7 @@ exports.viewAllBills = (req, res) => {
                                 });
                             }  else {
                                 amount_due = amount_due.toFixed(2);
+                                var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                                 models.Bill.update({
                                     updated_ts: datevalts,
                                     vendor: vendor,
@@ -293,6 +316,9 @@ exports.viewAllBills = (req, res) => {
                                             }
                                         }).then(function(updatedBill) {
                                             logger.info("Bill details updated in system");
+                                            var apiEndTime = timecalculator.TimeInMilliseconds();
+                                            Billmetrics.timing("Bill.PUT.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                                            Billmetrics.timing("Bill.PUT.APIComplete",apiEndTime-apiStartTime);
                                             res.status(200).send(updatedBill);
                                         }).catch(function(err) {
                                             logger.error("Couldn't update Bill details");
@@ -325,6 +351,8 @@ exports.viewAllBills = (req, res) => {
         }
 
         exports.deleteBill = (req, res) => {
+            Billmetrics.increment("Bill.DEL.deleteBill");
+            var apiStartTime = timecalculator.TimeInMilliseconds();
             var credentials = auth(req);
             if (!credentials) {
                 logger.error("No authorization credentials found in request");
@@ -347,6 +375,7 @@ exports.viewAllBills = (req, res) => {
                     var valid = true;
                     valid = bcrypt.compareSync(password, result[0].password) && valid;
                     if (valid) {
+                        var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                         models.Bill.findAll({
                             where: {
                                 id: billId,
@@ -368,6 +397,9 @@ exports.viewAllBills = (req, res) => {
                             }).then(function (UserBill) {
                                 if (UserBill > 0){
                                     logger.info("Bill deleted Successfully");
+                                    var apiEndTime = timecalculator.TimeInMilliseconds();
+                                    Billmetrics.timing("Bill.DEL.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                                    Billmetrics.timing("Bill.DEL.APIComplete",apiEndTime-apiStartTime);
                                     res.status(204).end();
                                 }
                                 else{

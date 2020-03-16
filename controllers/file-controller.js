@@ -7,8 +7,12 @@ const fs = require('fs');
 const util = require('./aws-client-fileUpload');
 const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("File-controller");
+const Filemetrics = require('../app-metrics/metricsFactory');
+const timecalculator = require('./timingController');
 
 exports.create = (req, res) => {
+    Filemetrics.increment("File.POST.addFile");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
         logger.error("No authorization credentials found in request");
@@ -56,9 +60,11 @@ exports.create = (req, res) => {
                             mimetype: file.mimetype,
                             md5: file.md5
                         }
-                        
+                        var S3UploadStartTime = timecalculator.TimeInMilliseconds();
                         util.uploadToS3(file,file_name, function(Data) {
                             logger.info("File successfully uploaded to S3 Bucket");
+                            var S3UploadEndTime = timecalculator.TimeInMilliseconds();
+                            var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                             models.File.create({
                                 id: uuid,
                                 file_name: file_name,
@@ -80,6 +86,10 @@ exports.create = (req, res) => {
                                     }
                                 }).then(function(BillUpdate) {
                                     logger.info("Successful updated bill with attached file details");
+                                    var apiEndTime = timecalculator.TimeInMilliseconds();
+                                    Filemetrics.timing("File.POST.S3",S3UploadEndTime-S3UploadStartTime);
+                                    Filemetrics.timing("File.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                                    Filemetrics.timing("File.POST.APIComplete",apiEndTime-apiStartTime);
                                     res.status(201).send(File);
                                 }).catch(function(err) {
                                     logger.error("Couldn't updated Bill for file details");
@@ -109,6 +119,8 @@ exports.create = (req, res) => {
 }
 
 exports.getFile = (req, res) => {
+    Filemetrics.increment("File.GET.viewFile");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
         logger.error("No authorization credentials found in request");
@@ -142,6 +154,7 @@ exports.getFile = (req, res) => {
                     }
                 }).then(function(UserBill) {
                     if (UserBill) {
+                        var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                         models.File.findOne({
                             where: {
                                 id: fileId,
@@ -151,6 +164,9 @@ exports.getFile = (req, res) => {
                             File.bill_id = undefined;
                             File.metaData = undefined;
                             logger.info("Found file details");
+                            var apiEndTime = timecalculator.TimeInMilliseconds();
+                            Filemetrics.timing("File.GET.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                            Filemetrics.timing("File.GET.APIComplete",apiEndTime-apiStartTime);
                             res.status(200).send(File);
                         }).catch(function(err) {
                             logger.error("File details not found");
@@ -184,6 +200,8 @@ exports.getFile = (req, res) => {
 
 
 exports.deleteFile = (req, res) => {
+    Filemetrics.increment("File.DEL.deleteFile");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -223,8 +241,11 @@ exports.deleteFile = (req, res) => {
                                 }
                             }).then(function(FileRet) {
                                 var filePath = FileRet.file_name;
+                                var S3DeleteStartTime = timecalculator.TimeInMilliseconds();
                                 util.deleteFromS3(filePath,function(Data) {
                                     logger.info("Deleted File from S3 Bucket");
+                                    var S3DeleteEndTime = timecalculator.TimeInMilliseconds();
+                                    var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                                         models.File.destroy({
                                             where: {
                                                 id: fileId,
@@ -242,6 +263,10 @@ exports.deleteFile = (req, res) => {
                                                     }
                                                 }).then(function(BillUpdate) {
                                                     logger.info("Updated Bill record after file deletion");
+                                                    var apiEndTime = timecalculator.TimeInMilliseconds();
+                                                    Filemetrics.timing("File.DEL.S3",S3DeleteEndTime-S3DeleteStartTime);
+                                                    Filemetrics.timing("File.DEL.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                                                    Filemetrics.timing("File.DEL.APIComplete",apiEndTime-apiStartTime);
                                                     res.status(204).end();
                                                 }).catch(function(err) {
                                                     console.log(err);

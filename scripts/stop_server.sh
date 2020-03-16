@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # This script is used to stop application
-killall -s KILL node
+echo "*******Stopped the cloudwatch service*********"
 sudo systemctl stop cloudwatch.service
-echo "Stooped the cloudwatch service"
+
+echo "*******Kill Node Service*********"
+killall -s KILL node

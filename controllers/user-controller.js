@@ -6,8 +6,12 @@ var models  = require('../models');
 const uuidv4 = require('uuid/v4');
 const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("User-controller");
+const Usermetrics = require('../app-metrics/metricsFactory');
+const timecalculator = require('./timingController');
 
 exports.create = (req, res) => {
+	Usermetrics.increment("User.POST.adduser");
+	var apiStartTime = timecalculator.TimeInMilliseconds();
 	var uuid = uuidv4();
 	var first_name = req.body.first_name;
 	var last_name = req.body.last_name;
@@ -59,11 +63,15 @@ exports.create = (req, res) => {
 	                email_address : email_address,
                     account_created :dateval,
                     account_updated : dateval
-                }) 
+				})
+				var DBQueryStartTime = timecalculator.TimeInMilliseconds(); 
                 User.save().then(function(err){
 					//console.log(User);
 					logger.info("User created successfully");
-                    User.password = undefined;
+					User.password = undefined;
+					var apiEndTime = timecalculator.TimeInMilliseconds();
+					Usermetrics.timing("User.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
+					Usermetrics.timing("User.POST.APIComplete",apiEndTime-apiStartTime);
                     res.status(201).send(User);
                 }).catch(function(err){
 					logger.error("User already exist");
@@ -76,6 +84,8 @@ exports.create = (req, res) => {
 }
 
 exports.view = (req, res) => {
+	Usermetrics.increment("User.GET.viewUser");
+	var apiStartTime = timecalculator.TimeInMilliseconds();
 	var credentials = auth(req);
 	if (!credentials) {
 		logger.error("No authorization credentials found in request");
@@ -84,12 +94,14 @@ exports.view = (req, res) => {
 		res.end('Access denied')
 	} else {  
 		var username = credentials.name;
-		var password = credentials.pass;      
+		var password = credentials.pass; 
+		var DBQueryStartTime = timecalculator.TimeInMilliseconds();      
         models.User.findAll({
             where: {
                 email_address: username
               }
               }).then(function(result){
+				var DBQueryEndTime = timecalculator.TimeInMilliseconds();  
                 var valid = true;
                 var UserFound;
                 valid = compare(username, result[0].email_address) && valid;
@@ -105,6 +117,9 @@ exports.view = (req, res) => {
 						account_updated: result[0].account_updated
 					}
 					res.statusCode = 200
+					var apiEndTime = timecalculator.TimeInMilliseconds();
+					Usermetrics.timing("User.GET.DBQueryComplete",DBQueryEndTime-DBQueryStartTime);
+					Usermetrics.timing("User.GET.APIComplete",apiEndTime-apiStartTime);
 					res.send(UserFound);
 				}else {
 					logger.error("User unauthorized");
@@ -122,6 +137,8 @@ exports.view = (req, res) => {
 }
 
 exports.update = (req, res) => {
+	Usermetrics.increment("User.PUT.updateUser");
+	var apiStartTime = timecalculator.TimeInMilliseconds();
 	var credentials = auth(req);
 	var first_name = req.body.first_name;
 	var last_name = req.body.last_name;
@@ -166,6 +183,7 @@ exports.update = (req, res) => {
 							console.log(err);
 						}
 						else{
+						var DBQueryStartTime = timecalculator.TimeInMilliseconds();
 						models.User.update({
 							first_name : first_name,
 							last_name: last_name,
@@ -176,6 +194,9 @@ exports.update = (req, res) => {
 						}
 						}).then(function(){
 							logger.info("User details updated successfully");
+							var apiEndTime = timecalculator.TimeInMilliseconds();
+							Usermetrics.timing("User.PUT.DBQueryComplete",apiEndTime-DBQueryStartTime);
+							Usermetrics.timing("User.PUT.APIComplete",apiEndTime-apiStartTime);
 							res.status(204).end();
 						}).catch(function(err){
 							console.log(err);
