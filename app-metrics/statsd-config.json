@@ -2,8 +2,7 @@
     "backends": [ "aws-cloudwatch-statsd-backend"],
     "cloudwatch":
         {
-        "accessKeyId": "ASIAVGXWVVLN2OEIJDPD",
-        "secretAccessKey":"YzwtSk9vmO97d6tMwoRaLIZSoFLQKZjVU2I1Lp0Y", 
+        "iamRole":"any",
         "region": "us-east-1"
     }
 }
