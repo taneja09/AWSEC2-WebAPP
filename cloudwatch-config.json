@@ -19,7 +19,10 @@
     },
     "metrics": {
         "metrics_collected": {
-        "statsd": {}
+        "statsd": {
+            "service_address":":8125",
+            "metrics_collection_interval":60
+            }
         }
     }
 }
