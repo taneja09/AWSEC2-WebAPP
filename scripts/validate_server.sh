@@ -6,7 +6,7 @@ listencount=$(netstat -an | grep 3000 | grep LISTEN | wc -l)
 if [ "$listencount" -lt 1 ]; then
     exit 1
 else
-    sudo systemctl reload-or-restart cloudwatch.service
+    sudo systemctl start cloudwatch.service
     echo "***************Reloading the cloudwatch service**************"
     exit 0
 fi
