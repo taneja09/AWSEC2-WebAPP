@@ -12,5 +12,5 @@ echo "**********copied cloud config to provided path!*************"
 
 sleep 3
 
-sudo systemctl start cloudwatch.service
+sudo systemctl reload-or-restart cloudwatch.service
 echo "***************Reloading the cloudwatch service**************"
