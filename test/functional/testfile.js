@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.json())

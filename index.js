@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 var cors = require('cors');
 var port = normalizePort(process.env.PORT || '3000');
 var fileUpload = require('express-fileupload');
+const AppLogger = require('./app-logs/loggerFactory');
+const logger = AppLogger.defaultLogProvider("server");
 
 
 const app = express();
@@ -19,21 +21,20 @@ app.get('/',(req,res) => {
 });
 
 require('./api-routes/routes')(app);
-
-
-
   models.sequelize.sync().then(function() {
     /**
      * Listen on provided port, on all network interfaces.
      */
     app.listen(port, function() {
+      logger.info("Server Started")
       console.log('Express server listening on port ' + port);
     });
     app.on('error', onError);
     app.on('listening', onListening);
   }).catch(function(err){
     console.log(err);
-    console.log(models.db);
+    logger.error("Error occured while connecting to sequelize")
+    //console.log(models.db);
   });
   
 

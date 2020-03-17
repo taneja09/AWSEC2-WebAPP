@@ -4,8 +4,14 @@ const compare = require('tsscmp');
 const saltRounds = 10;
 var models  = require('../models');
 const uuidv4 = require('uuid/v4');
+const AppLogger = require('../app-logs/loggerFactory');
+const logger = AppLogger.defaultLogProvider("User-controller");
+const Usermetrics = require('../app-metrics/metricsFactory');
+const timecalculator = require('./timingController');
 
 exports.create = (req, res) => {
+	Usermetrics.increment("User.POST.adduser");
+	var apiStartTime = timecalculator.TimeInMilliseconds();
 	var uuid = uuidv4();
 	var first_name = req.body.first_name;
 	var last_name = req.body.last_name;
@@ -45,7 +51,9 @@ exports.create = (req, res) => {
 	} else {
 		bcrypt.hash(password, saltRounds, function(err, hash) {
 			if (err) {
-				console.log("Password can't be hashed !");
+				//console.log("Password can't be hashed !");
+				logger.error("Couldn't store the Password !");
+				
 			} else {
                 var User = models.User.build({
 					id:uuid,
@@ -55,13 +63,19 @@ exports.create = (req, res) => {
 	                email_address : email_address,
                     account_created :dateval,
                     account_updated : dateval
-                }) 
+				})
+				var DBQueryStartTime = timecalculator.TimeInMilliseconds(); 
                 User.save().then(function(err){
-                    console.log(User);
-                    User.password = undefined;
+					//console.log(User);
+					logger.info("User created successfully");
+					User.password = undefined;
+					var apiEndTime = timecalculator.TimeInMilliseconds();
+					//Usermetrics.timing("User.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
+					//Usermetrics.timing("User.POST.APIComplete",apiEndTime-apiStartTime);
                     res.status(201).send(User);
                 }).catch(function(err){
-                    res.status(400).send("User with this email already exist !");
+					logger.error("User already exist");
+                    res.status(400).send("User with this email already exist");
                 });
 				
 			}
@@ -70,24 +84,30 @@ exports.create = (req, res) => {
 }
 
 exports.view = (req, res) => {
+	Usermetrics.increment("User.GET.viewUser");
+	var apiStartTime = timecalculator.TimeInMilliseconds();
 	var credentials = auth(req);
 	if (!credentials) {
+		logger.error("No authorization credentials found in request");
 		res.statusCode = 401
 		res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
 		res.end('Access denied')
 	} else {  
 		var username = credentials.name;
-		var password = credentials.pass;      
+		var password = credentials.pass; 
+		var DBQueryStartTime = timecalculator.TimeInMilliseconds();      
         models.User.findAll({
             where: {
                 email_address: username
               }
               }).then(function(result){
+				var DBQueryEndTime = timecalculator.TimeInMilliseconds();  
                 var valid = true;
                 var UserFound;
                 valid = compare(username, result[0].email_address) && valid;
                 valid = bcrypt.compareSync(password, result[0].password) && valid;
                 if (valid) {
+					logger.info("User details found in system");
 					UserFound = {
 						id: result[0].id,
 						first_name: result[0].first_name,
@@ -97,13 +117,19 @@ exports.view = (req, res) => {
 						account_updated: result[0].account_updated
 					}
 					res.statusCode = 200
+					var apiEndTime = timecalculator.TimeInMilliseconds();
+					//Usermetrics.timing("User.GET.DBQueryComplete",DBQueryEndTime-DBQueryStartTime);
+					//Usermetrics.timing("User.GET.APIComplete",apiEndTime-apiStartTime);
+					console.log(Usermetrics);
 					res.send(UserFound);
 				}else {
+					logger.error("User unauthorized");
 					res.statusCode = 401
 					res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
 					res.end('Access denied')
 				}
               }).catch(function(err){
+				logger.error("User doesn't exist in system");
                 res.statusCode = 401
 					res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
 					res.end('Access denied')
@@ -112,6 +138,8 @@ exports.view = (req, res) => {
 }
 
 exports.update = (req, res) => {
+	Usermetrics.increment("User.PUT.updateUser");
+	var apiStartTime = timecalculator.TimeInMilliseconds();
 	var credentials = auth(req);
 	var first_name = req.body.first_name;
 	var last_name = req.body.last_name;
@@ -124,6 +152,7 @@ exports.update = (req, res) => {
 	dateval = dateval.toISOString();
 
 	if (!credentials) {
+		logger.error("No authorization credentials found in request");
 		res.statusCode = 401
 		res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
 		res.end('Access denied')
@@ -155,6 +184,7 @@ exports.update = (req, res) => {
 							console.log(err);
 						}
 						else{
+						var DBQueryStartTime = timecalculator.TimeInMilliseconds();
 						models.User.update({
 							first_name : first_name,
 							last_name: last_name,
@@ -164,6 +194,10 @@ exports.update = (req, res) => {
 							email_address: username
 						}
 						}).then(function(){
+							logger.info("User details updated successfully");
+							var apiEndTime = timecalculator.TimeInMilliseconds();
+							Usermetrics.timing("User.PUT.DBQueryComplete",apiEndTime-DBQueryStartTime);
+							Usermetrics.timing("User.PUT.APIComplete",apiEndTime-apiStartTime);
 							res.status(204).end();
 						}).catch(function(err){
 							console.log(err);
@@ -172,11 +206,13 @@ exports.update = (req, res) => {
 					}
 				});
 				}else{
+					logger.error("User unauthorized");
 					res.statusCode = 401
 					res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
 					res.end('Access denied')
 				}
 			  }).catch(function(err){
+				logger.error("User doesn't exist in system");
 				console.log(err);
               });
 	}

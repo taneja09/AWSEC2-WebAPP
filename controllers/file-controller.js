@@ -5,10 +5,17 @@ const bcrypt = require('bcrypt');
 var shortid = require('shortid');
 const fs = require('fs');
 const util = require('./aws-client-fileUpload');
+const AppLogger = require('../app-logs/loggerFactory');
+const logger = AppLogger.defaultLogProvider("File-controller");
+const Filemetrics = require('../app-metrics/metricsFactory');
+const timecalculator = require('./timingController');
 
 exports.create = (req, res) => {
+    Filemetrics.increment("File.POST.addFile");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
+        logger.error("No authorization credentials found in request");
         res.statusCode = 401
         res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
         res.end('Access denied')
@@ -18,6 +25,7 @@ exports.create = (req, res) => {
         var billId = req.url.split("/")[3];
 
         if (!billId) {
+            logger.error("No Bill Id found in request");
             res.status(400).send({
                 Message: "Please provide corrcet Bill Id !!"
             });
@@ -37,6 +45,7 @@ exports.create = (req, res) => {
                     }
                 }).then(function(Bill) {
                     if (Bill[0].attachment) {
+                        logger.error("Bill already has a file attached, can't duplicate entry");
                         res.status(400).send("Bill already has a file attached, please delete that before uploading a new File !");
                     } else {
                         var uuid = uuidv4();
@@ -51,8 +60,11 @@ exports.create = (req, res) => {
                             mimetype: file.mimetype,
                             md5: file.md5
                         }
-                        
+                        var S3UploadStartTime = timecalculator.TimeInMilliseconds();
                         util.uploadToS3(file,file_name, function(Data) {
+                            logger.info("File successfully uploaded to S3 Bucket");
+                            var S3UploadEndTime = timecalculator.TimeInMilliseconds();
+                            var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                             models.File.create({
                                 id: uuid,
                                 file_name: file_name,
@@ -62,6 +74,7 @@ exports.create = (req, res) => {
                                 metaData: metaDataObj
 
                             }).then(function(File) {
+                                logger.info("Successful added file record");
                                 File.bill_id = undefined;
                                 File.metaData = undefined;
                                 models.Bill.update({
@@ -72,24 +85,30 @@ exports.create = (req, res) => {
                                         owner_id: User[0].id
                                     }
                                 }).then(function(BillUpdate) {
+                                    logger.info("Successful updated bill with attached file details");
+                                    var apiEndTime = timecalculator.TimeInMilliseconds();
+                                    Filemetrics.timing("File.POST.S3",S3UploadEndTime-S3UploadStartTime);
+                                    Filemetrics.timing("File.POST.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                                    Filemetrics.timing("File.POST.APIComplete",apiEndTime-apiStartTime);
                                     res.status(201).send(File);
                                 }).catch(function(err) {
-                                    console.log(err);
+                                    logger.error("Couldn't updated Bill for file details");
                                     res.status(400).send("Issue while updating the Bill !");
                                 });
                             }).catch(function(err) {
-                                console.log(err);
+                                logger.error("Issue while adding file for provided Bill");
                                 res.status(400).send("Issue while uploading File !");
                             });
                         });
                     }
                 }).catch(function(err) {
+                    logger.error("Bill doesn't exist in system");
                     res.status(404).send("Bill is not found !");
                 });
 
             }
-
         }).catch(function(err) {
+            logger.error("User doesn't exist in system");
             res.statusCode = 401
             res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
             res.end('Access denied')
@@ -100,8 +119,11 @@ exports.create = (req, res) => {
 }
 
 exports.getFile = (req, res) => {
+    Filemetrics.increment("File.GET.viewFile");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
+        logger.error("No authorization credentials found in request");
         res.statusCode = 401
         res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
         res.end('Access denied')
@@ -112,6 +134,7 @@ exports.getFile = (req, res) => {
         var fileId = req.url.split("/")[5];
 
         if (!billId || !fileId) {
+            logger.error("Bill Id or File Id Not found in request");
             res.status(404).send({
                 Message: "Please provide corrcet Bill Id and File Id !!"
             });
@@ -131,6 +154,7 @@ exports.getFile = (req, res) => {
                     }
                 }).then(function(UserBill) {
                     if (UserBill) {
+                        var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                         models.File.findOne({
                             where: {
                                 id: fileId,
@@ -139,22 +163,32 @@ exports.getFile = (req, res) => {
                         }).then(function(File) {
                             File.bill_id = undefined;
                             File.metaData = undefined;
+                            logger.info("Found file details");
+                            var apiEndTime = timecalculator.TimeInMilliseconds();
+                            Filemetrics.timing("File.GET.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                            Filemetrics.timing("File.GET.APIComplete",apiEndTime-apiStartTime);
                             res.status(200).send(File);
                         }).catch(function(err) {
+                            logger.error("File details not found");
                             res.status(404).send("Bill is not found !");
                         });
-                    } else
+                    } else{
+                        logger.warn("Bill details not found");
                         res.status(404).end();
+                    }
 
                 }).catch(function(err) {
+                    logger.error("Issue while finding Bill");
                     console.log(err);
                 });
             } else {
+                logger.error("User unauthorized");
                 res.statusCode = 401
                 res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
                 res.end('Access denied')
             }
         }).catch(function(err) {
+            logger.error("User doesn't exist in system");
             res.statusCode = 401
             res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
             res.end('Access denied')
@@ -166,6 +200,8 @@ exports.getFile = (req, res) => {
 
 
 exports.deleteFile = (req, res) => {
+    Filemetrics.increment("File.DEL.deleteFile");
+    var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -178,6 +214,7 @@ exports.deleteFile = (req, res) => {
         var fileId = req.url.split("/")[5];
 
         if (!billId || !fileId) {
+            logger.error("Bill Id or File Id Not found in request");
             res.status(404).send({
                 Message: "Please provide corrcet Bill Id and File Id !!"
             });
@@ -204,7 +241,11 @@ exports.deleteFile = (req, res) => {
                                 }
                             }).then(function(FileRet) {
                                 var filePath = FileRet.file_name;
+                                var S3DeleteStartTime = timecalculator.TimeInMilliseconds();
                                 util.deleteFromS3(filePath,function(Data) {
+                                    logger.info("Deleted File from S3 Bucket");
+                                    var S3DeleteEndTime = timecalculator.TimeInMilliseconds();
+                                    var DBQueryStartTime = timecalculator.TimeInMilliseconds();
                                         models.File.destroy({
                                             where: {
                                                 id: fileId,
@@ -212,6 +253,7 @@ exports.deleteFile = (req, res) => {
                                             }
                                         }).then(function(DelFile) {
                                             if (DelFile > 0) {
+                                                logger.info("Deleted File record from system");
                                                 models.Bill.update({
                                                     attachment: null
                                                 }, {
@@ -220,36 +262,48 @@ exports.deleteFile = (req, res) => {
                                                         owner_id: User[0].id
                                                     }
                                                 }).then(function(BillUpdate) {
+                                                    logger.info("Updated Bill record after file deletion");
+                                                    var apiEndTime = timecalculator.TimeInMilliseconds();
+                                                    Filemetrics.timing("File.DEL.S3",S3DeleteEndTime-S3DeleteStartTime);
+                                                    Filemetrics.timing("File.DEL.DBQueryComplete",apiEndTime-DBQueryStartTime);
+                                                    Filemetrics.timing("File.DEL.APIComplete",apiEndTime-apiStartTime);
                                                     res.status(204).end();
                                                 }).catch(function(err) {
                                                     console.log(err);
+                                                    logger.error("Couldn't Update Bill record after file deletion");
                                                     res.status(400).send("Issue while updating the Bill after file deletion !");
                                                 });
-                                            } else
+                                            } else{
+                                                logger.war("File record is not found");
                                                 res.status(404).end();
+                                            }
                                         }).catch(function(err) {
-                                            console.log(err);
+                                            logger.error("Issue while deleting the file record");
                                             res.status(400).send("Issue while destroying file record. !");
                                         });
                                     })
                             }).catch(function(err) {
+                                logger.error("File not found");
                                 res.status(404).send("file record doesn't exist !!")
                             });
                         } else {
+                            logger.error("Bill not found");
                             res.status(404).end();
                         }
 
                     }).catch(function(err) {
-                        console.log(err);
+                        logger.error("Issue while finding Bill");
                         res.status(404).send("Bill record doesn't exist !!")
                     });
 
                 } else {
+                    logger.error("User unauthorized");
                     res.statusCode = 401
                     res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
                     res.end('Access denied')
                 }
             }).catch(function(err) {
+                logger.error("User doesn't exist in system");
                 res.statusCode = 401
                 res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
                 res.end('Access denied')
