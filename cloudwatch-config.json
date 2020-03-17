@@ -26,7 +26,6 @@
             "metrics_collection_interval":10,
             "metrics_aggregation_interval":0
             }
-        },
-        "MetricName": "webappMetrics"
+        }
     }
 }
