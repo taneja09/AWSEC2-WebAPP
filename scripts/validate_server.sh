@@ -3,10 +3,11 @@
 # This script is used to validate application 
 ipaddr=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 listencount=$(netstat -an | grep 3000 | grep LISTEN | wc -l)
+
+sleep 3
+
 if [ "$listencount" -lt 1 ]; then
     exit 1
 else
-    sudo systemctl reload-or-restart cloudwatch.service
-    echo "***************Reloading the cloudwatch service**************"
     exit 0
 fi
