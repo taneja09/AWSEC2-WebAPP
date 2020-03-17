@@ -12,5 +12,7 @@ echo "**********copied cloud config to provided path!*************"
 
 sleep 3
 
-sudo systemctl reload-or-restart cloudwatch.service
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+	-a fetch-config -m ec2 \
+	-c file:/opt/aws/amazon-cloudwatch-agent/etc/cloudwatch-config.json -s
 echo "***************Reloading the cloudwatch service**************"
