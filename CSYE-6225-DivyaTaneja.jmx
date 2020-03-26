@@ -30,8 +30,8 @@
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
               <stringProp name="Authorization.url">http://prod.divyataneja.me/</stringProp>
-              <stringProp name="Authorization.username">nitin@gmail.com</stringProp>
-              <stringProp name="Authorization.password">divya11235</stringProp>
+              <stringProp name="Authorization.username">"USERNAME</stringProp>
+              <stringProp name="Authorization.password">"PASSWORD"</stringProp>
               <stringProp name="Authorization.domain"></stringProp>
               <stringProp name="Authorization.realm"></stringProp>
             </elementProp>
