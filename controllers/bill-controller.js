@@ -477,9 +477,11 @@ exports.getDueBills = (req, res) => {
                     };
                     sqs.sendMessage(params, function(err, data) {
                         if(err) {
+                            logger.info("Error while sending message to queue");
                             res.send(err);
                         }
                         else {
+                            logger.info("sent the message to SQS queue");
                             res.send("You will receive reposnse in email within an hour. Your request id is: " + data.MessageId);
                         }
                     });

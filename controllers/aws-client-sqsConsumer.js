@@ -4,6 +4,8 @@ const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const {Consumer} = require('sqs-consumer');
 var models = require('../models');
 const {Op} = require("sequelize");
+const AppLogger = require('../app-logs/loggerFactory');
+const logger = AppLogger.defaultLogProvider("sqsConsumer-controller");
 
 // AWS.config.update({
 //     region: envParams.REGION,
@@ -27,12 +29,15 @@ const consumeSQS = Consumer.create({
                 var billOwner = bodyContent.BillOwner;
                 var emailAddress = bodyContent.BillOwnerEmail;
 
+                logger.info("SQS Consumer received message from API request");  
+
                 var fromDate = new Date();   //Current date
                 var BillDueDate = new Date();
                 BillDueDate.setDate(BillDueDate.getDate() + billDueDays); //Date till which User need due Bills
 
                 if (checkForTokenExist(billOwner, function(data) {  //Check if the same user has already existing token in dynmodb
-                        models.Bill.findAll({                      //If not find due bills and send to SNS
+                    logger.info("Token is not present in dynamo db");   
+                    models.Bill.findAll({                      //If not find due bills and send to SNS
                             where: {
                                 owner_id: billOwner,
                                 paymentStatus: 'due',
@@ -60,12 +65,15 @@ const consumeSQS = Consumer.create({
                              //publish details to SNS to trigger Lambda Function
                             sns.publish(params, function(err, data) {
                                 if (err) {
+                                    logger.error("Issue : SNS Data published"); 
                                     console.error(err);
                                 } else {
+                                    logger.info("SNS Data published");  
                                     console.log("SNS Publish Data \n" + data);
                                 }
                             });
                         }).catch(function(err) {
+                            logger.error("Issue : while retriving the bills for user"); 
                             console.log(err);
                         });
                     })
@@ -97,8 +105,10 @@ const consumeSQS = Consumer.create({
             }
             documentClient.get(param, (err, data) => {
                 if (err) {
+                    logger.error("DB access issue to check token"); 
                     console.error(err);
                 } else if(!data.Item) {
+                    logger.info("Token found in dynamo db"); 
                     callback(data);
                 }
             });
