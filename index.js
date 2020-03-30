@@ -7,6 +7,7 @@ var port = normalizePort(process.env.PORT || '3000');
 var fileUpload = require('express-fileupload');
 const AppLogger = require('./app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("server");
+const sqsConsumer = require('./controllers/aws-client-sqsConsumer');
 
 
 const app = express();
@@ -26,7 +27,8 @@ require('./api-routes/routes')(app);
      * Listen on provided port, on all network interfaces.
      */
     app.listen(port, function() {
-      logger.info("Server Started")
+      logger.info("Server Started");
+      sqsConsumer.start();
       console.log('Express server listening on port ' + port);
     });
     app.on('error', onError);

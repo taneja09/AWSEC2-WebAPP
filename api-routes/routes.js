@@ -14,6 +14,8 @@ module.exports = (app) => {
     app.put('/v1/bill/:id',bill.updateBill);
     app.delete('/v1/bill/:id',bill.deleteBill);
 
+    app.get('/v1/bills/due/:days',bill.getDueBills);
+
     app.post('/v1/bill/:id/file',file.create);
     app.get('/v1/bill/:billid/file/:fileId',file.getFile);
     app.delete('/v1/bill/:billid/file/:fileId',file.deleteFile);
