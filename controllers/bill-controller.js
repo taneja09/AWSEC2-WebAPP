@@ -9,15 +9,15 @@ const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("Bill-controller");
 const Billmetrics = require('../app-metrics/metricsFactory');
 const timecalculator = require('./timingController');
-const AWS = require('aws-sdk');
+const AWS = require('../config/aws-creds');
 const envParams = require('../config/aws-config');
 const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 
-AWS.config.update({
-    region: envParams.REGION,
-    accessKeyId : envParams.accessKeyId,
-    secretAccessKey :envParams.secretAccessKey
-});
+// AWS.config.update({
+//     region: envParams.REGION,
+//     accessKeyId : envParams.accessKeyId,
+//     secretAccessKey :envParams.secretAccessKey
+// });
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 exports.create = (req, res) => {

@@ -1,19 +1,19 @@
 
-const AWS = require('aws-sdk');
+const AWS = require('../config/aws-creds');
 const envParams = require('../config/aws-config');
 
-const REGION = envParams.REGION;
+// const REGION = envParams.REGION;
 const BUCKET = envParams.BUCKET;
 
-AWS.config.update({
-    region: REGION,
-});
+// AWS.config.update({
+//     region: REGION,
+// });
 
-AWS.config.credentials = new AWS.EC2MetadataCredentials({
-    httpOptions: { timeout: 5000 },
-    maxRetries: 10,
-    retryDelayOptions: { base: 200 }
-})
+// AWS.config.credentials = new AWS.EC2MetadataCredentials({
+//     httpOptions: { timeout: 5000 },
+//     maxRetries: 10,
+//     retryDelayOptions: { base: 200 }
+// })
 
 function uploadToS3(file,file_name, callback) {
     let s3bucket = new AWS.S3({
