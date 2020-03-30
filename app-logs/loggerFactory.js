@@ -14,7 +14,7 @@ function getDefaultLogProvider() {
     }
 
     log4js.configure({
-        appenders: { 'file': { type: 'file', filename: 'csye6225.log' } },
+        appenders: { 'file': { type: 'file', filename: '/opt/csye6225.log' } },
         categories: { default: { appenders: ['file'], level } }
       });
 
