@@ -1,6 +1,5 @@
 const AWS = require('aws-sdk');
-const envParams = require('../config/aws-config');
-const REGION = envParams.REGION;
+const REGION = 'us-east-1';
 
 AWS.config.update({
     region: REGION,

@@ -1,5 +1,4 @@
 const AWS = require('../config/aws-creds');
-const envParams = require('../config/aws-config');
 const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const {Consumer} = require('sqs-consumer');
 var models = require('../models');
@@ -7,18 +6,10 @@ const {Op} = require("sequelize");
 const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("sqsConsumer-controller");
 
-// AWS.config.update({
-//     region: envParams.REGION,
-//     accessKeyId: envParams.accessKeyId,
-//     secretAccessKey: envParams.secretAccessKey
-// });
 
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 const sns = new AWS.SNS({apiVersion: 'latest'});
-//const ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
-const documentClient = new AWS.DynamoDB.DocumentClient({
-    region: envParams.REGION
-});
+const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
 const consumeSQS = Consumer.create({
             queueUrl: queueUrl,
