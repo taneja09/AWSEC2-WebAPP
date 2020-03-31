@@ -35,12 +35,15 @@ const consumeSQS = Consumer.create({
                                 due_date: {
                                     [Op.between]: [fromDate, BillDueDate]
                                 },
+                                attachment :{
+                                    [Op.ne]: null
+                                }
                             }
                         }).then(function(UserBills) {
                             jsonObj = [];
                             var obj = {};
                             for (var i = 0; i < UserBills.length; i++) {
-                                jsonObj.push(UserBills[i].dataValues);
+                                jsonObj.push(UserBills[i].dataValues.attachment.url);
                             }
                             //console.log(jsonObj);
                             obj['data']=jsonObj;  // All Bills
