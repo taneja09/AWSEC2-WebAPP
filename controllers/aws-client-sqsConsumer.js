@@ -1,5 +1,5 @@
 const AWS = require('../config/aws-creds');
-const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
+//const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const {Consumer} = require('sqs-consumer');
 var models = require('../models');
 const {Op} = require("sequelize");
@@ -19,22 +19,22 @@ logger.info("Found domain name "+ EDomain);
 
 
 var SNSTopicArn = process.env.SNSTopicArn;
-//TopicArn: 'arn:aws:sns:us-east-1:358073346779:BillRequest'
+// var TopicArn: 'arn:aws:sns:us-east-1:358073346779:BillRequest'
 
-// var Qparams = {QueueName: "BillQueue"};
+var Qparams = {QueueName: "BillQueue"};
 
-// var queueUrl = sqs.getQueueUrl(Qparams, function(err, data) {
-//     console.log("hello");
-//     if (err){
-//         logger.error('Error while retrieving sqs queue url');
-//         console.log("err");
-//     }else{     
-//         logger.info('SQS queue url retrieved '+ data);
-//         //queueUrl = data || "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
-//         console.log(data);
-//     }  
-// });
-// console.log("1................."+queueUrl);
+var queueUrl = sqs.getQueueUrl(Qparams, function(err, data) {
+    console.log("hello");
+    if (err){
+       // logger.error('Error while retrieving sqs queue url');
+        console.log("err");
+    }else{     
+        //logger.info('SQS queue url retrieved '+ data);
+        //queueUrl = data || "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
+        console.log(data);
+    }  
+});
+console.log("1................."+queueUrl);
 
 const consumeSQS = Consumer.create({
     queueUrl: queueUrl,
