@@ -10,22 +10,11 @@ const logger = AppLogger.defaultLogProvider("Bill-controller");
 const Billmetrics = require('../app-metrics/metricsFactory');
 const timecalculator = require('./timingController');
 const AWS = require('../config/aws-creds');
-//const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
- // queue url to be found from running instance from AWS account
-var Qparams = {QueueName: 'BillQueue'};
+var AccountId = process.env.AccountId;
+const queueUrl = "https://sqs.us-east-1.amazonaws.com/"+AccountId+"/BillQueue";
+logger.info("Found source SQS Url "+ queueUrl);
 
- var queueUrl = sqs.getQueueUrl(Qparams, function(err, data) {
-    console.log("hello");
-    if (err){
-       logger.error('Error while retrieving sqs queue url');
-        console.log("err");
-    }else{     
-        logger.info('SQS queue url retrieved '+ data);
-        //queueUrl = data || "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
-        console.log(data);
-    }  
-});
 
 exports.create = (req, res) => {
     Billmetrics.increment("Bill.POST.addBill");

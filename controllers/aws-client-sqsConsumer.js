@@ -1,41 +1,22 @@
 const AWS = require('../config/aws-creds');
-//const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const {Consumer} = require('sqs-consumer');
 var models = require('../models');
 const {Op} = require("sequelize");
 const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("sqsConsumer-controller");
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
-const sns = new AWS.SNS({
-    apiVersion: 'latest'
-});
-const documentClient = new AWS.DynamoDB.DocumentClient({
-    region: 'us-east-1'
-});
+const sns = new AWS.SNS({apiVersion: 'latest'});
+const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
 //Email Address Domain
-var EDomain = process.env.NODE_ENV == "test" ? "dev.divyataneja.me" : "prod.divyataneja.me";
-logger.info("Found domain name "+ EDomain);
-
+var EDomain = process.env.SourceEmail;
+logger.info("Found source Email "+ EDomain);
 
 var SNSTopicArn = process.env.SNSTopicArn;
-// var TopicArn: 'arn:aws:sns:us-east-1:358073346779:BillRequest'
+var queueUrl = process.env.SQSQueryURL;
 
-var Qparams = {QueueName: "BillQueue"};
-
-var queueUrl = sqs.getQueueUrl(Qparams, function(err, data) {
-    console.log("hello");
-    if (err){
-        logger.error('Error while retrieving sqs queue url');
-        console.log("err");
-    }else{     
-        logger.info('SQS queue url retrieved '+ data.QueueUrl);
-        //queueUrl = data || "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
-        console.log(data);
-    }  
-});
-console.log("1................."+queueUrl);
-logger.log("1................."+queueUrl);
+logger.info("Found source SQS Url "+ queueUrl);
+logger.info("Found source SNS Topic "+ SNSTopicArn);
 
 const consumeSQS = Consumer.create({
     queueUrl: queueUrl,
