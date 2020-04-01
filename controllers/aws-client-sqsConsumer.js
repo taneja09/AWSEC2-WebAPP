@@ -1,15 +1,34 @@
 const AWS = require('../config/aws-creds');
-const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
+//const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const {Consumer} = require('sqs-consumer');
 var models = require('../models');
 const {Op} = require("sequelize");
 const AppLogger = require('../app-logs/loggerFactory');
 const logger = AppLogger.defaultLogProvider("sqsConsumer-controller");
-
-
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 const sns = new AWS.SNS({apiVersion: 'latest'});
 const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
+
+//Email Address Domain
+var EDomain =  process.env.NODE_ENV == "test" ? "dev.divyataneja.me" : "prod.divyataneja.me";
+logger.info("Found domain name "+ EDomain);
+
+var SNSTopicArn = process.env.SNSTopicArn;
+//TopicArn: 'arn:aws:sns:us-east-1:358073346779:BillRequest'
+
+var queueUrl; // queue url to be found from running instance from AWS account
+var Qparams = {
+    QueueName: 'BillQueue'
+  };
+
+sqs.getQueueUrl(Qparams, function(err, data) {
+        if (err){
+            logger.error('Error while retrieving sqs queue url');
+        }else{     
+            logger.info('SQS queue url retrieved');
+            queueUrl = data; 
+        }  
+  });
 
 const consumeSQS = Consumer.create({
             queueUrl: queueUrl,
@@ -49,11 +68,12 @@ const consumeSQS = Consumer.create({
                             obj['data']=jsonObj;  // All Bills
                             obj['email'] = emailAddress; //email address to send details
                             obj['ownerId'] = billOwner;  //Id for dynamodb
+                            obj['domain'] = EDomain; //dev/prod domain 
 
                             //console.log(obj);
                             var params = {
                                 Message: JSON.stringify(obj),
-                                TopicArn: 'arn:aws:sns:us-east-1:358073346779:BillRequest'
+                                TopicArn: SNSTopicArn
                             };
 
                              //publish details to SNS to trigger Lambda Function

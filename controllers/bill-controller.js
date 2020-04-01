@@ -10,8 +10,22 @@ const logger = AppLogger.defaultLogProvider("Bill-controller");
 const Billmetrics = require('../app-metrics/metricsFactory');
 const timecalculator = require('./timingController');
 const AWS = require('../config/aws-creds');
-const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
+//const queueUrl = "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
+
+var queueUrl; // queue url to be found from running instance from AWS account
+var Qparams = {
+    QueueName: 'BillQueue'
+  };
+
+sqs.getQueueUrl(Qparams, function(err, data) {
+        if (err){
+            logger.error('Error while retrieving sqs queue url');
+        }else{     
+            logger.info('SQS queue url retrieved '+ data);
+            queueUrl = data; 
+        }  
+  });
 
 exports.create = (req, res) => {
     Billmetrics.increment("Bill.POST.addBill");
@@ -438,7 +452,7 @@ exports.viewAllBills = (req, res) => {
 
 
 exports.getDueBills = (req, res) => {
-    Billmetrics.increment("Bill.GET.viewAllBills");
+    Billmetrics.increment("Bill.GET.DueBills");
     var apiStartTime = timecalculator.TimeInMilliseconds();
     var credentials = auth(req);
     if (!credentials) {
@@ -475,6 +489,8 @@ exports.getDueBills = (req, res) => {
                         }
                         else {
                             logger.info("sent the message to SQS queue");
+                            var apiEndTime = timecalculator.TimeInMilliseconds();
+                            Billmetrics.timing("Bill.GET.DueBills",apiEndTime-apiStartTime);
                             res.send("You will receive reposnse in email within an hour. Your request id is: " + data.MessageId);
                         }
                     });

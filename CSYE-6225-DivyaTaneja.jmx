@@ -30,20 +30,21 @@
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
               <stringProp name="Authorization.url">http://prod.divyataneja.me/</stringProp>
-              <stringProp name="Authorization.username">"USERNAME</stringProp>
-              <stringProp name="Authorization.password">"PASSWORD"</stringProp>
+              <stringProp name="Authorization.username">dtaneja0911@gmail.com</stringProp>
+              <stringProp name="Authorization.password">divya11235</stringProp>
               <stringProp name="Authorization.domain"></stringProp>
               <stringProp name="Authorization.realm"></stringProp>
             </elementProp>
           </collectionProp>
           <boolProp name="AuthManager.controlledByThreadGroup">false</boolProp>
+          <boolProp name="AuthManager.clearEachIteration">true</boolProp>
         </AuthManager>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">dev.divyataneja.me</stringProp>
+          <stringProp name="HTTPSampler.domain">prod.divyataneja.me</stringProp>
           <stringProp name="HTTPSampler.port">80</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -75,7 +76,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;vendor&quot;: &quot;SUr University&quot;,&#xd;
+  &quot;vendor&quot;: &quot;NCSU University&quot;,&#xd;
   &quot;bill_date&quot;: &quot;2020-01-06&quot;,&#xd;
   &quot;due_date&quot;: &quot;2020-01-12&quot;,&#xd;
   &quot;amount_due&quot;: 5000.51,&#xd;
@@ -84,7 +85,7 @@
     &quot;tuition&quot;,&#xd;
     &quot;spring2020&quot;&#xd;
   ],&#xd;
-  &quot;paymentStatus&quot;: &quot;paid&quot;,&#xd;
+  &quot;paymentStatus&quot;: &quot;due&quot;,&#xd;
   &quot;attachment&quot;: {}&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
