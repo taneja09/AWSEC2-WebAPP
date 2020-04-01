@@ -11,8 +11,7 @@ const Billmetrics = require('../app-metrics/metricsFactory');
 const timecalculator = require('./timingController');
 const AWS = require('../config/aws-creds');
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
-var AccountId = process.env.AccountId;
-const queueUrl = "https://sqs.us-east-1.amazonaws.com/"+AccountId+"/BillQueue";
+var queueUrl = process.env.SQSQueryURL;
 logger.info("Found source SQS Url "+ queueUrl);
 
 
