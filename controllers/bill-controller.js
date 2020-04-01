@@ -26,7 +26,7 @@ var Qparams = {QueueName: 'BillQueue'};
         console.log(data);
     }  
 });
-console.log("----------------"+queueUrl);
+
 exports.create = (req, res) => {
     Billmetrics.increment("Bill.POST.addBill");
     var apiStartTime = timecalculator.TimeInMilliseconds();

@@ -29,7 +29,7 @@ var queueUrl = sqs.getQueueUrl(Qparams, function(err, data) {
         logger.error('Error while retrieving sqs queue url');
         console.log("err");
     }else{     
-        logger.info('SQS queue url retrieved '+ data);
+        logger.info('SQS queue url retrieved '+ data.QueueUrl);
         //queueUrl = data || "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
         console.log(data);
     }  
