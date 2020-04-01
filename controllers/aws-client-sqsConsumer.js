@@ -14,9 +14,11 @@ logger.info("Found source Email "+ EDomain);
 
 var SNSTopicArn = process.env.SNSTopicArn;
 var queueUrl = process.env.SQSQueryURL;
+var DNS = process.env.DNSName;
 
 logger.info("Found source SQS Url "+ queueUrl);
 logger.info("Found source SNS Topic "+ SNSTopicArn);
+logger.info("Found source DNS "+ DNS);
 
 const consumeSQS = Consumer.create({
     queueUrl: queueUrl,
@@ -41,16 +43,14 @@ const consumeSQS = Consumer.create({
                         paymentStatus: 'due',
                         due_date: {
                             [Op.between]: [fromDate, BillDueDate]
-                        },
-                        attachment: {
-                            [Op.ne]: null
                         }
                     }
                 }).then(function(UserBills) {
                     jsonObj = [];
                     var obj = {};
                     for (var i = 0; i < UserBills.length; i++) {
-                        jsonObj.push(UserBills[i].dataValues.attachment.url);
+                        DueBillUrls = DNS+"/v1/bill/"+UserBills[i].dataValues.id;
+                        jsonObj.push(DueBillUrls);
                     }
                     //console.log(jsonObj);
                     obj['data'] = jsonObj; // All Bills
