@@ -26,15 +26,16 @@ var Qparams = {QueueName: "BillQueue"};
 var queueUrl = sqs.getQueueUrl(Qparams, function(err, data) {
     console.log("hello");
     if (err){
-       // logger.error('Error while retrieving sqs queue url');
+        logger.error('Error while retrieving sqs queue url');
         console.log("err");
     }else{     
-        //logger.info('SQS queue url retrieved '+ data);
+        logger.info('SQS queue url retrieved '+ data);
         //queueUrl = data || "https://sqs.us-east-1.amazonaws.com/358073346779/BillQueue";
         console.log(data);
     }  
 });
 console.log("1................."+queueUrl);
+logger.log("1................."+queueUrl);
 
 const consumeSQS = Consumer.create({
     queueUrl: queueUrl,
