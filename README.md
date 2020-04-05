@@ -28,6 +28,10 @@ As sson as there is a merge take place to the webapp repository, the build gets 
 3. CODE_DEPLOY_BUCKET
 4. AWS_REGION
 
+**Command to import the SSL certificate for LoadBalancers**
+`aws acm import-certificate --certificate fileb://prod_divyataneja_me.crt --private-key fileb://mykey.key \`
+`--certificate-chain fileb://prod_divyataneja_me.ca-bundle`
+
 **Run the appication locally**
 =========================================
 
