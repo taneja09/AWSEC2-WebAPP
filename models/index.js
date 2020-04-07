@@ -16,7 +16,10 @@ console.log(config);
 // } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config,{
     dialectOptions: {
-      ssl: 'Amazon RDS'
+      ssl: {
+        rejectUnauthorized: true,
+        ca: [rdsCa]
+      }
     }
   });
 //}
