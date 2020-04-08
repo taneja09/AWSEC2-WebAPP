@@ -49,7 +49,7 @@ const consumeSQS = Consumer.create({
                     jsonObj = [];
                     var obj = {};
                     for (var i = 0; i < UserBills.length; i++) {
-                        DueBillUrls = DNS+"/v1/bill/"+UserBills[i].dataValues.id;
+                        DueBillUrls = "https://" + DNS+"/v1/bill/"+UserBills[i].dataValues.id;
                         jsonObj.push(DueBillUrls);
                     }
                     //console.log(jsonObj);
