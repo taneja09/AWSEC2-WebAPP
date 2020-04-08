@@ -7,7 +7,6 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV||"development";
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
-const rdsCa = fs.readFileSync(__dirname + '/../certificates/rds-combined-ca-bundle.pem');
 
 let sequelize;
 console.log(config);
@@ -16,10 +15,7 @@ console.log(config);
 // } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config,{
     dialectOptions: {
-      ssl: {
-        rejectUnauthorized: true,
-        ca: [rdsCa]
-      }
+      ssl: "Amazon RDS"
     }
   });
 //}

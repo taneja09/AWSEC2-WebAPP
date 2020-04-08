@@ -19,7 +19,7 @@ External Libraries used:
 
 __Build & Deployment__
 The application runs on AWS Cloud EC2 instance and is deployed via CircleCI pipe-line.
-As sson as there is a merge take place to the webapp repository, the build gets triggered and deployment takes place.
+As sson as there is a merge take place to the webapp repository, the build gets triggered and deployment takes place in AWS account.
 
 *Environemnt variables need to be configured in CircleCI pipeline are*
 
@@ -29,8 +29,7 @@ As sson as there is a merge take place to the webapp repository, the build gets 
 4. AWS_REGION
 
 **Command to import the SSL certificate for LoadBalancers**
-`aws acm import-certificate --certificate fileb://prod_divyataneja_me.crt --private-key fileb://mykey.key \`
-`--certificate-chain fileb://prod_divyataneja_me.ca-bundle`
+`aws acm import-certificate --certificate fileb://prod_divyataneja_me.crt --private-key fileb://mykey.key --certificate-chain fileb://prod_divyataneja_me.ca-bundle`
 
 **Run the appication locally**
 =========================================
