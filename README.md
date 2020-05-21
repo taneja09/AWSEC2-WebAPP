@@ -1,6 +1,6 @@
 [Architecture design & Details](https://taneja09.github.io/AWSEC2-Deployment/)
 
-[](AWSArchitecture.png)
+![](AWSArchitecture.png)
 
 # webapp
 
