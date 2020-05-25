@@ -1,4 +1,4 @@
-[Architecture design & Details](https://taneja09.github.io/AWSEC2-Deployment/)
+[More Information on Architecture Design](https://taneja09.github.io/AWSEC2-Deployment/)
 
 ![](AWSArchitecture.png)
 
