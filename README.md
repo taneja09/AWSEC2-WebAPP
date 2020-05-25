@@ -1,10 +1,11 @@
-[More Information on Architecture Design](https://taneja09.github.io/AWSEC2-Deployment/)
-
-![](AWSArchitecture.png)
+![Application Flow](AWSArchitecture.png)
 
 # webapp
 
 ******* Billing & Invoicing System *******
+
+*******Architecture Design********
+[More Information on Architecture Design](https://taneja09.github.io/AWSEC2-Deployment/)
 
 API Impementation with `Node.js`
 Programming language : `Javascript`
