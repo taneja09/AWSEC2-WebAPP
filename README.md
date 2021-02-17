@@ -148,6 +148,6 @@ As sson as there is a merge take place to the webapp repository, the build gets 
 
 
 `Author: Divya Taneja` <br />
-`Email: taneja.di@northeastern.edu`
+`Email: dtaneja089@gmail.com`
 
 
